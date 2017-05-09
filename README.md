@@ -1,5 +1,5 @@
 
-# Specification 'webpayments-methods-tokenization'
+# Tokenized Card Payment
 
-This is the repository for webpayments-methods-tokenization. You're welcome to contribute! Let's make the Web rock our socks
-off!
+<p>Read the <a href="https://w3c.github.io/webpayments-methods-tokenization/index.html">Tokenized Card Payment Specification</a>.</p>
+
