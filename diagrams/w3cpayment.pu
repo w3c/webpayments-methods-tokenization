@@ -1,0 +1,66 @@
+@startuml
+autonumber
+Actor "User"  as user
+Participant "Payment App Provider" as provider
+Participant "Payee(Merchant)" as merchant
+Participant "Payment App\n(Wallet)" as app
+Participant "Merchant PSP" as psp
+Participant "Mediator\n user operated" as browser
+Participant "Acquirer" as acquirer
+
+== user setting up payment method(TBD) ==
+browser --> provider : request payment app
+provider --> browser : register payment app
+provider --> browser : authenticate/register user
+browser --> app : enable payment app
+app --> browser : enroll payment instrument
+browser --> app : payment instrument enrolled
+
+==  user buying with registered payment method ==
+merchant --> browser : is paymentMethod registered()
+browser --> merchant : success
+merchant --> browser : payment request()
+note right
+payment request \n
+- supported payment methods
+- PSP supported
+- payment details
+- options
+
+end note
+browser --> browser : identify eligible payment app \n based on supported PSP
+browser --> browser : select payment app and confirm transaction details
+alt optional card selection
+browser --> app : card selection
+app --> browser : cardIdentifier,lastFourOfCards
+
+end
+browser --> app : payment request
+app --> app : generate token and link to PSP
+note left
+PSP would be on-boarded to Payment app provider via W3C\n
+This requires public key of PSP to verify signature\n
+during accessing resource
+
+end note
+app --> browser : token,cardBrand,lastFourOfCard, stepupURL?
+alt stepup required
+browser --> provider : perform step up (3DS)
+provider --> browser : successful step up (pares)
+end
+browser --> merchant : token,cardBrand,lastFourOfCard,resourceURL
+merchant --> psp : token,resourceURL
+psp --> provider : Access Resource(token, signature, networkTokenSupported)
+provider --> psp : FPAN or EMV token+cryptogram
+note right
+EMV Token is defined as per EMV standard and has meta data.
+GW Token is opaque token used to get FPAN to process payment
+end note
+psp --> acquirer : process payment(FPAN or EMV Token)
+acquirer --> psp : success or failure
+
+
+
+
+
+@enduml
