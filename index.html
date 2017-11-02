@@ -101,7 +101,7 @@
               supportedTypes: ['credit', 'debit'],
               amount : 250.00, 
               currency : 'USD,
-              merchantPublicKey : 'https://merchant.com/publickey'
+              publicKeyProviderURL : 'https://merchant.com/publickey'
               }
              },
            ...,
@@ -134,7 +134,7 @@
       <pre class="idl">
 
         dictionary TokenizedCardRequest : BasicCardRequest {
-          required DOMString merchantPublicKey;
+          required DOMString publicKeyProviderURL;
         };
       </pre>
       <p>
@@ -236,7 +236,7 @@
         <dd>
           The terms <dfn>PaymentAddress</dfn> and <dfn>PaymentRequest
           constructor</dfn> are defined in Payment Request API
-          [[payment-request]].</dfn>
+          [[payment-request]].
         </dd>
         <dt>
           Payment Method Identifiers
