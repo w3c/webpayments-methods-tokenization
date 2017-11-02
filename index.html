@@ -166,6 +166,7 @@
           required DOMString typeOfCryptogram;
           required DOMString lastFourOfFPAN;    
           required DOMString trid;
+          PaymentAddress? billingAddress;
         };
       </pre>
       <dl>
@@ -219,6 +220,15 @@
         </dt>
         <dd>
           Token requestor id.
+        </dd>
+        <dt>
+          <dfn>billingAddress</dfn> member
+        </dt>
+        <dd>
+          A <code><dfn data-cite=
+          "!payment-request#dom-paymentaddress">PaymentAddress</dfn></code>
+          that represents the billing address associated with the card, or
+          null.
         </dd>
       </dl>
     </section>
