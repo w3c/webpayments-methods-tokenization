@@ -17,12 +17,6 @@
           edDraftURI:   "https://w3c.github.io/webpayments-methods-tokenization/",
           specStatus: "unofficial",
           editors: [
-                {   name:       "Kevin Hurley",
-                    company:    "Facebook" },
-                {
-                    name:      "Roy McElmurry",
-                    company:   "Facebook"
-                },
                 {
                     name:      "Manash Bhattacharjee",
                     company:   "Mastercard"
@@ -31,13 +25,42 @@
                     name:      "Keyur Patel",
                     company:   "Mastercard"
                 },
+                {   name:       "Kevin Hurley",
+                    company:    "Facebook"
+                },
+                {
+                    name:      "Roy McElmurry",
+                    company:   "Facebook"
+                }
           ],
           useExperimentalStyles: true,
          license:      "w3c-software-doc",
          wg:           "Web Payments Working Group",
          wgURI:        "https://www.w3.org/Payments/WG/",
          wgPublicList: "public-payments-wg",
-         issueBase:    "https://github.com/w3c/webpayments-methods-tokenization/issues"
+         issueBase:    "https://github.com/w3c/webpayments-methods-tokenization/issues",
+        localBiblio: {
+          "card-network-ids": {
+            "href": "https://www.w3.org/Payments/card-network-ids",
+            "publisher": "W3C",
+            "title": "Card Network Identifiers Approved for use with Payment Request API"
+          },
+          "EMVCO-TOKENIZATION": {
+            "href": "https://www.emvco.com/emv-technologies/payment-tokenisation/",
+            "publisher": "EMVCo",
+            "title": "EMV® Payment Tokenisation Specification – Technical Framework"
+          },
+          "EMVCO-3DS": {
+            "href": "https://www.emvco.com/emv-technologies/3d-secure/",
+            "publisher": "EMVCo",
+            "title": "EMV® 3-D Secure"
+          },
+          "RESPONSE-DATA-ENCRYPTION": {
+            "href": "https://github.com/w3c/webpayments-crypto/wiki/Encryption",
+            "publisher": "W3C",
+            "title": "Encryption (PROPOSAL)"
+          }
+        },
       };
     </script>
     <style>
@@ -76,37 +99,65 @@
         payments. The tokens anticipated by this specification are "network" or
         "issuer" tokens.
       </p>
-      <p>
-        Tokenization provides some advantages over traditional card payments -
-        tokenized credentials are often narrowly scoped, for example single-use
-        or merchant/amount/time scoped. Tokenized credentials also help
-        alleviate some concerns about merchant data breaches since the merchant
-        does not have the raw PAN. This provides some additional security for a
-        consumer.
+      <p class="issue" title="Drop the word 'card' from this payment method" data-number="27">
+	The task force is discussing whether this payment method should be specific to network tokens for card payments, or more general-purpose.
       </p>
+      <p>Payment networks such as Mastercard, Visa, and American Express provide tokenization services for credit cards and debit cards. The intention of tokenization is to ensure that a consumer's primary account number (PAN) is not exposed to potentially insecure merchant environments. To increase the security of payment processing, merchants —or their Payment Service Providers (PSPs)— may use tokens along with cryptographically generated dynamic data.</p>
+      <p>This document describes a payment method that achieves the security goals of EMVCo tokenization specifications, within the usual Payment Request API flow. The payment handler achieves this by leveraging elements of [[EMVCO-TOKENIZATION]] and [[EMVCO-3DS]].</p>
+
     </section>
     <section id="exampleData">
       <h2>
         Examples
       </h2>
-      <p>
-        @@complete with updated information@@
-      </p>
-      <pre class="example">
-         var supportedInstruments = [
-            {
-              supportedMethods: ['tokenized-card']
-              data: {
-              supportedNetworks: ['amex', 'discover', 'mastercard', 'visa'],
-              supportedTypes: ['credit', 'debit'],
-              amount : 250.00, 
-              currency : 'USD,
-              publicKeyProviderURL : 'https://merchant.com/publickey'
-              }
-             },
-           ...,
-           ];
-      </pre>
+      <section>
+	<h3>Request Example</h3>
+	<pre class="example">
+const methodData = [{
+  supportedMethods: ["tokenized-card"],
+  data: {
+    supportedNetworks: ['mastercard','visa', 'amex', 'discover', 'jcb','unionpay'],
+    supportedTypes: ['credit','debit'],
+    keyProviderURL: 'https://pspKeyProvider.example/tokenizedCardPublicKey',
+  }
+}];
+
+const details = {
+  displayItems: [
+    {
+      label: "Sub-total",
+      amount: { currency: "USD", value: "55.00" },
+    },
+    {
+      label: "Sales Tax",
+      amount: { currency: "USD", value: "5.00" },
+    },
+  ],
+  total: {
+    label: "Total due",
+    // The total is USD$65.00 here because we need to
+    // add shipping (below). The selected shipping
+    // costs USD$5.00.  
+    amount: { currency: "USD", value: "65.00" },
+  },
+};
+
+new PaymentRequest(methodData, details);
+	</pre>
+      </section>
+      <section>
+	<h3>Response Example</h3>
+	<p class="issue" title="Please include example of TokenizedCardResponse" data-number="34"></p>
+      </section>
+    </section>
+    <section id="method-id">
+      <h2>
+        Payment Method Prerequisites
+      </h2>
+      <p>The following are prerequisites for using this payment method.</p>
+      <ul>
+	<li>A payment handler MUST be able to access the services of one or more <a>Token Service Providers</a>.</li>
+      </ul>
     </section>
     <section id="method-id">
       <h2>
@@ -127,110 +178,160 @@
         part of the <code>data</code> argument to the PaymentRequest
         constructor.
       </p>
-      <p>
-        This specification extends the <a>BasicCardRequest</a> with some
-        additional fields required for tokenization.
-      </p>
+      <p class="issue" title="Linkage to BasicCard Spec" data-number="17">The task force is still discussing whether this specification should include terms common to Basic Card by reference or redefine them in line.</p>
       <pre class="idl">
-
-        dictionary TokenizedCardRequest : BasicCardRequest {
-          required DOMString publicKeyProviderURL;
-        };
+	dictionary TokenizedCardRequest{
+          sequence&lt;DOMString&gt;       supportedNetworks;
+          sequence&lt;BasicCardType&gt;        supportedTypes;
+          required DOMString        keyProviderURL; 
+	};
       </pre>
       <p>
         The <code>TokenizedCardRequest</code> dictionary contains the following
-        members (beyond those defined in [[!payment-method-basic-card]]):
+        members:
       </p>
       <dl>
         <dt>
-          <dfn>publicKeyProviderURL</dfn>
+          <dfn>supportedNetworks</dfn>
         </dt>
         <dd>
-          This member is a URL used to fetch a certificate signed by a
-          certificate authority; this is used to encrypt response data.
+          A sequence of identifiers for card networks that the merchant
+          accepts. W3C maintains a <a data-cite="card-network-ids">list of
+          approved card network identifiers</a>.
+        </dd>
+        <dt>
+          <dfn>supportedTypes</dfn>
+        </dt>
+        <dd>
+        A card can be of type "credit",
+        "debit", or "prepaid", as derived from the issuer identification number
+        (the first eight digits of the <dfn data-cite=
+        "!ISO7812-1">primary account number</dfn> (PAN). 
+	The different types are represented as the <a>BasicCardType</a> enum.
+        </dd>
+        <dt>
+          <dfn>keyProviderURL</dfn>
+        </dt>
+        <dd>
+          This member designates, via a URL, a public key trusted by the <a>Token Service Provider</a>. The source of the key, therefore, becomes the effective requestor of the tokenized-card from a <a>Token Service Provider</a>'s perspective.
+	  <p class="issue" title="What public key formats are acceptable, and any constraints?">
+	    See <a href="https://github.com/w3c/webpayments-crypto/issues/1"> What public key formats are acceptable, and any constraints? #1 </a>.
+	    </p>
         </dd>
       </dl>
     </section>
     <section data-dfn-for="TokenizedCardResponse" data-link-for=
-    "TokenizedCardResponse">
+	     "TokenizedCardResponse">
       <h2>
         <dfn>TokenizedCardResponse</dfn> dictionary
       </h2>
       <pre class="idl">
-        dictionary TokenizedCardResponse {
-          required DOMString cardholderName;
-          required DOMString paymentToken;
-          required DOMString paymentTokenExpiryDate;
-          required DOMString tokenProviderURL;
-          required DOMString cryptogram;
-          required DOMString typeOfCryptogram;
-          required DOMString lastFourOfFPAN;    
-          required DOMString trid;
-          PaymentAddress? billingAddress;
-        };
+	dictionary TokenizedCardResponse {
+  	               DOMString       displayMaskedCard;
+	               DOMString       displayLast4;
+	   required    DOMString       displayExpiryMonth;
+	   required    DOMString       displayExpiryYear; 
+	   required    DOMString       displayNetwork;
+	   required    EncryptedTokenizedCard encryptedTokenizedCard;
+	 };
       </pre>
       <dl>
         <dt>
-          <dfn>cardholderName</dfn> member
+          <dfn>displayLast4</dfn> member
         </dt>
-        <dd>
-          The card holder's name as it appears on the card.
-        </dd>
+	<dd>
+	  It is common for applications to want to display recognizable information about the user's card, without revealing sensitive credentials. This value may be used as a hint, for the common case of displaying the last four digits of the original PAN.</dd>
         <dt>
-          <dfn>paymentToken</dfn> member
+          <dfn>displayMaskedCard</dfn> member
         </dt>
-        <dd>
-          Token used in place of card per the EMV tokenization specification.
-        </dd>
+	<dd>In some cases, the card issuer may provide an alternative hint to <a>displayLast4</a>. Applications MAY use either <a>displayLast4</a> or <a>displayMaskedCard</a> as a hint, and SHOULD use only one of them to avoid confusion or leaking information.
+	</dd>
         <dt>
-          <dfn>paymentTokenExpiryDate</dfn> member
+          <dfn>displayExpiryMonth</dfn> member
         </dt>
-        <dd>
-          Date of token expiry.
-          <p class="issue">
-            What is the date format?
-          </p>
-        </dd>
+	<dd>
+	  A two-digit string for the actual expiry month of the card in the range "01" to "12". 
+	</dd>
         <dt>
-          <dfn>tokenProviderURL</dfn> member
+          <dfn>displayExpiryYear</dfn> member
         </dt>
-        <dd>
-          URL of entity that provided the cardToken.
-        </dd>
+	<dd>
+	  A four-digit string for the expiry year of the actual card in the range "0000" to "9999". 
+	</dd>
         <dt>
-          <dfn>cryptogram</dfn> member
+          <dfn>displayNetwork</dfn> member
         </dt>
-        <dd>
-          Dynamic data generated by token provider.
-        </dd>
+	<dd>
+	  The name of the actual <a>Payment Network</a> of the card.
+	</dd>
         <dt>
-          <dfn>typeOfCryptogram</dfn> member
+          <dfn>encryptedTokenizedCard</dfn> member
         </dt>
-        <dd>
-          Type of cryptogram, for example UCAF/ICC.
-        </dd>
-        <dt>
-          <dfn>lastFourOfFPAN</dfn> member
-        </dt>
-        <dd>
-          Last four digits of FPAN, for display to the user.
-        </dd>
-        <dt>
-          <dfn>trid</dfn> member
-        </dt>
-        <dd>
-          Token requestor id.
-        </dd>
-        <dt>
-          <dfn>billingAddress</dfn> member
-        </dt>
-        <dd>
-          A <code><dfn data-cite=
-          "!payment-request#dom-paymentaddress">PaymentAddress</dfn></code>
-          that represents the billing address associated with the card, or
-          null.
-        </dd>
+	<dd>
+	  This member includes <a>EncryptedTokenizedCard</a> information.
+	</dd>
       </dl>
+      <section  data-dfn-for="EncryptedTokenizedCard" data-link-for=
+	     "EncryptedTokenizedCard">
+	<h2>
+          <dfn>EncryptedTokenizedCard</dfn> dictionary
+	</h2>
+
+	<p>This dictionary represents data encrypted with the key identified by the <a data-lt="TokenizedCardRequest.keyProviderURL">keyProviderURL</a> according to [[RESPONSE-DATA-ENCRYPTION]].</p>
+	
+	<pre class="idl">
+	  dictionary EncryptedTokenizedCard {
+  	   required DOMString       cardNumber;
+	   required DOMString       expiryMonth;
+	   required DOMString       expiryYear;
+	   required DOMString       cryptogram;
+	            DOMString       typeOfCryptogram;
+	            DOMString       eci;
+	            DOMString       trid;
+	  };
+	</pre>
+	<dl>
+	  <dt>
+	    <dfn>cardNumber</dfn> member
+	  </dt>
+	  <dd>This member is a <a>Payment Token</a>.</dd>
+	  <dt>
+	    <dfn>expiryMonth</dfn> member
+	  </dt>
+	  <dd>
+	    A two-digit string of dynamic data in the range "01" to "12"; this does not represent the actual expiry month of the card.
+	  </dd>
+	  <dt>
+	    <dfn>expiryYear</dfn> member
+	  </dt>
+	  <dd>
+	    A four-digit string of dynamic data in the range "0000" to "9999"; this does not represent the actual expiry year of the card.
+	  </dd>
+	  <dt>
+	    <dfn>cryptogram</dfn> member
+	  </dt>
+	  <dd>
+	    This member is a <a>Token Cryptogram</a>. It is <a>Payment Network</a>-specifi and used to ensure the authenticity of the transaction.
+	  </dd>
+	  <dt>
+	    <dfn>typeOfCryptogram</dfn> member
+	  </dt>
+	  <dd>
+	    This member is a  <a>Payment Network</a>-specific string that described the <a>cryptogram</a> type.
+	  </dd>
+	  <dt>
+	    <dfn>eci</dfn> member 
+	  </dt>
+	  <dd>
+	    This member is an <a>Electronic Commerce Indicator</a>, a <a>Payment Network</a>-specific string to indicate the results of user authentication.
+	  <dt>
+	    <dfn>trid</dfn> member
+	  </dt>
+	  <dd>
+	    This member is a <a>Transaction ID</a>, a <a>Payment Network</a>-specific string that plays a role in transaction verification.
+	  </dd>
+	</dl>
+      </section>
     </section>
     <section id="dependencies">
       <h2>
@@ -261,18 +362,36 @@
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!payment-method-basic-card#method-id">basic-card</dfn>,
-          <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportednetworks">supportedNetworks</dfn>,
-          and <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportedtypes">supportedTypes</dfn>,
-          <dfn data-cite=
-          "!payment-method-basic-card#basiccardrequest-dictionary">BasicCardRequest</dfn>,
-          and <dfn data-cite=
-          "!payment-method-basic-card#basiccardresponse-dictionary">BasicCardResponse</dfn>
-          are defined in [[!payment-method-basic-card]].
+			 "!payment-method-basic-card#method-id">basic-card</dfn>
+	  and
+	  <dfn data-cite=
+			 "!payment-method-basic-card#basiccardtype-enum">BasicCardType</dfn> are
+ defined in [[!payment-method-basic-card]].
         </dd>
+	<dt>
+	  EMVCo Tokenisation
+	</dt>
+	<dd>The terms <dfn data-cite="!EMVCO-TOKENIZATION">Payment Token</dfn>, <dfn data-cite="EMVCO-TOKENIZATION">Token Cryptogram</dfn>, <dfn data-lt="Payment Network" data-cite="EMVCO-TOKENIZATION">Payment Networks</dfn>, <dfn data-lt="Token Service Provider" data-cite="EMVCO-TOKENIZATION">Token Service Providers</dfn> and <dfn data-cite="EMVCO-TOKENIZATION">Tokenized Payment Method Credentials</dfn> are defined in [[EMVCO-TOKENIZATION]].
+	</dd>
+	<dt>
+	  EMVCo 3-D Secure
+	</dt>
+	<dd>The terms <dfn data-cite="!EMVCO-3DS">Electronic Commerce Indicator</dfn> and <dfn data-cite="EMVCO-3DS">Transaction ID</dfn> are defined in [[EMVCO-3DS]].
+	</dd>
+	<dt>Response Data Encryption</dt>
+	<dd>
+	  [[!RESPONSE-DATA-ENCRYPTION]] is a work in progress of the Web Payments Working Group.
       </dl>
+    </section>
+    <section id="method-id" class="informative">
+      <h2>
+        Appendix: Token Service Provider Considerations
+      </h2>
+      <p>The following <a>Token Service Provider</a> considerations
+	are explicitly out of scope for this specification.</p>
+      <ul>
+	<li>Any requirement for a KeyProvider to register/onboard with a Token Service Provider, for example to establish cryptogram conventions or other program-specific requirements.</li>
+      </ul>
     </section>
     <section id="flow">
       <h2>
@@ -280,7 +399,7 @@
       </h2>
       <p>
         <img alt="Tokenized card payment flow" width="100%" src=
-        "https://raw.githubusercontent.com/w3c/webpayments-methods-tokenization/gh-pages/diagrams/tokenization.png">
+        "https://w3c.github.io/webpayments-methods-tokenization/diagrams/tokenization3.png">
       </p>
     </section>
   </body>
