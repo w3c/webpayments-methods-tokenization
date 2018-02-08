@@ -1,14 +1,14 @@
 @startuml
 autonumber
-Participant "User"  as user
 Participant "Merchant / PSP"  as merchant
 Participant "Browser"  as browser
+Participant "User"  as user
 Participant "Payment Handler" as handler
 Participant "Token Service Provider" as tsp
 
-user --> merchant : Buy
-merchant --> browser : pr.show()
-browser --> browser : Match handlers
+merchant --> browser : Provide checkout page
+browser --> user : Display checkout page
+user --> browser : Push buy button, triggering pr.show()
 browser --> user : Display handlers
 user --> browser: Select handler
 browser --> handler: Launch
