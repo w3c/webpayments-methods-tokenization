@@ -219,6 +219,9 @@ new PaymentRequest(methodData, details);
 	    </p>
         </dd>
       </dl>
+
+      <p class="issue" title="Token Properties for Matching" data-number="25"></p>
+      <p class="issue" title="Multiuse Tokens" data-number="20"></p>
     </section>
     <section data-dfn-for="TokenizedCardResponse" data-link-for=
 	     "TokenizedCardResponse">
@@ -278,7 +281,8 @@ new PaymentRequest(methodData, details);
 	</h2>
 
 	<p>This dictionary represents data encrypted with the key identified by the <a data-lt="TokenizedCardRequest.keyProviderURL">keyProviderURL</a> according to [[RESPONSE-DATA-ENCRYPTION]].</p>
-	
+ 
+	<p class="issue" title="Encryption Details" data-number="35"></p>
 	<pre class="idl">
 	  dictionary EncryptedTokenizedCard {
   	   required DOMString       cardNumber;
@@ -333,6 +337,12 @@ new PaymentRequest(methodData, details);
 	</dl>
       </section>
     </section>
+    <section id="security">
+      <h2>
+        Security and Privacy Considerations
+      </h2>
+      <p class="issue" title="Document threat model" data-number="36"></p>
+    </section>
     <section id="dependencies">
       <h2>
         Dependencies
@@ -377,6 +387,10 @@ new PaymentRequest(methodData, details);
 	  EMVCo 3-D Secure
 	</dt>
 	<dd>The terms <dfn data-cite="!EMVCO-3DS">Electronic Commerce Indicator</dfn> and <dfn data-cite="EMVCO-3DS">Transaction ID</dfn> are defined in [[EMVCO-3DS]].
+	  <p class="issue" title="EMV-like Security" data-number="28">
+	    The fact of referencing 3D Secure here means that the data
+	    returned is not strictly defined by EMV Tokenization.
+	  </p>
 	</dd>
 	<dt>Response Data Encryption</dt>
 	<dd>
@@ -392,6 +406,8 @@ new PaymentRequest(methodData, details);
       <ul>
 	<li>Any requirement for a KeyProvider to register/onboard with a Token Service Provider, for example to establish cryptogram conventions or other program-specific requirements.</li>
       </ul>
+      <p class="issue" title="Out-of-band provisioning" data-number="32"></p>
+      <p class="issue" title="Key Provider Registration" data-number="31"></p>
     </section>
     <section id="flow">
       <h2>
@@ -401,6 +417,8 @@ new PaymentRequest(methodData, details);
         <img alt="Tokenized card payment flow" width="100%" src=
         "https://w3c.github.io/webpayments-methods-tokenization/diagrams/tokenization3.png">
       </p>
+      <p class="issue" title="Where does tokenisation occur in the the flow - and do we care" data-number="16"></p>
+
     </section>
   </body>
 </html>
