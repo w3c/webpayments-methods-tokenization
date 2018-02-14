@@ -168,7 +168,8 @@ new PaymentRequest(methodData, details);
         <p>
           This example shows some fictitious Mastercard-specific response data.
         </p>
-        <pre class="example">
+        <div class="example">
+          <pre>
           {
           displayLast4: "***6789",
           displayExpiryMonth: "02",
@@ -177,11 +178,11 @@ new PaymentRequest(methodData, details);
           encryptedTokenizedCard: "QWxobHZ4bU4yWkt1QUFFU05GWjRHb0FCRkE9PQ==", 
           }
         </pre>
-        <p>
-          When decrypted, the <code>encryptedTokenizedCard</code> data would
-          be:
-        </p>
-        <pre class="example">
+          <p>
+            When decrypted, the <code>encryptedTokenizedCard</code> data would
+            be:
+          </p>
+          <pre>
           {
           cardNumber: "5413339000001513",
           expiryMonth: "12",
@@ -192,6 +193,7 @@ new PaymentRequest(methodData, details);
           trid: "59812345678",
           }
         </pre>
+        </div>
       </section>
     </section>
     <section id="prerequisites">
