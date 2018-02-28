@@ -75,9 +75,8 @@
   <body>
     <section id="abstract">
       <p>
-        This specification is a Payment Method Specification used by the
-        PaymentRequest API [[!payment-request]] to support tokenized card
-        payments.
+        This specification defines a Payment Method used by the PaymentRequest
+        API [[!payment-request]] to support tokenized card payments.
       </p>
     </section>
     <section id='sotd'>
@@ -189,8 +188,8 @@ new PaymentRequest(methodData, details);
           expiryYear: "20",
           cryptogram: "AlhlvxmN2ZKuAAESNFZ4GoABFA==",
           typeOfCryptogram: "UCAF", // "Universal Card Authentication Field"
-          eci: "242", // Authorization and final transaction request with UCAF data
           trid: "59812345678",
+          eci: "242", // Authorization and final transaction request with UCAF data
           }
         </pre>
         </div>
@@ -362,8 +361,8 @@ new PaymentRequest(methodData, details);
            required DOMString       expiryYear;
            required DOMString       cryptogram;
                     DOMString       typeOfCryptogram;
-                    DOMString       eci;
                     DOMString       trid;
+                    DOMString       eci;
           };
         </pre>
         <dl>
@@ -403,20 +402,19 @@ new PaymentRequest(methodData, details);
             described the <a>cryptogram</a> type.
           </dd>
           <dt>
+            <dfn>trid</dfn> member
+          </dt>
+          <dd>
+            This member is a <a>Token Requestor ID</a>, an 11-digit numeric
+            value set by the Token Service Provider.
+          </dd>
+          <dt>
             <dfn>eci</dfn> member
           </dt>
           <dd>
             This member is an <a>Electronic Commerce Indicator</a>, a
             <a>Payment Network</a>-specific string to indicate the results of
             user authentication.
-          </dd>
-          <dt>
-            <dfn>trid</dfn> member
-          </dt>
-          <dd>
-            This member is a <a>Transaction ID</a>, a <a>Payment
-            Network</a>-specific string that plays a role in transaction
-            verification.
           </dd>
         </dl>
       </section>
@@ -469,17 +467,17 @@ new PaymentRequest(methodData, details);
           <dfn data-cite="EMVCO-TOKENIZATION">Token Cryptogram</dfn>,
           <dfn data-lt="Payment Network" data-cite="EMVCO-TOKENIZATION">Payment
           Networks</dfn>, <dfn data-lt="Token Service Provider" data-cite=
-          "EMVCO-TOKENIZATION">Token Service Providers</dfn> and
-          <dfn data-cite="EMVCO-TOKENIZATION">Tokenized Payment Method
-          Credentials</dfn> are defined in [[EMVCO-TOKENIZATION]].
+          "EMVCO-TOKENIZATION">Token Service Providers</dfn>, <dfn data-cite=
+          "EMVCO-TOKENIZATION">Token Requestor ID</dfn> and <dfn data-cite=
+          "EMVCO-TOKENIZATION">Tokenized Payment Method Credentials</dfn> are
+          defined in [[EMVCO-TOKENIZATION]].
         </dd>
         <dt>
           EMVCo 3-D Secure
         </dt>
         <dd>
           The terms <dfn data-cite="!EMVCO-3DS">Electronic Commerce
-          Indicator</dfn> and <dfn data-cite="EMVCO-3DS">Transaction ID</dfn>
-          are defined in [[EMVCO-3DS]].
+          Indicator</dfn> is defined in [[EMVCO-3DS]].
           <p class="issue" title="EMV-like Security" data-number="28">
             The fact of referencing 3D Secure here means that the data returned
             is not strictly defined by EMV Tokenization.
