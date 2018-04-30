@@ -170,12 +170,11 @@ new PaymentRequest(methodData, details);
           displayExpiryMonth: "02",
           displayExpiryYear: "22",
           displayNetwork: "mastercard",
-          encryptedTokenizedCard: "QWxobHZ4bU4yWkt1QUFFU05GWjRHb0FCRkE9PQ==", 
+          encryptedDetails: "QWxobHZ4bU4yWkt1QUFFU05GWjRHb0FCRkE9PQ==", 
           }
         </pre>
           <p>
-            When decrypted, the <code>encryptedTokenizedCard</code> data would
-            be:
+            When decrypted, the <code>encryptedDetails</code> data would be:
           </p>
           <pre>
           {
@@ -243,10 +242,10 @@ new PaymentRequest(methodData, details);
         dictionary TokenizedCardRequest{
           sequence&lt;DOMString&gt;       supportedNetworks;
           sequence&lt;BasicCardType&gt;   supportedTypes;
-          optional sequence&lt;DOMString&gt; supportedCryptogramTypes;
-          optional &lt;TokenUsageType&gt; usageType;
-          optional &lt;DOMString&gt;      payeeID;
+          sequence&lt;DOMString&gt; supportedCryptogramTypes;
           required DOMString              keyProviderURL;
+                   TokenUsageType         usageType;
+                   DOMString              payeeID;
         };
       </pre>
       <p>
@@ -268,16 +267,16 @@ new PaymentRequest(methodData, details);
         <dd>
           A card can be of type "credit", "debit", or "prepaid", as derived
           from the issuer identification number (the first eight digits of the
-          <dfn data-cite="!ISO7812-1">primary account number</dfn> (PAN). The
-          different types are represented as the <a>BasicCardType</a> enum.
+          <a>primary account number</a> (PAN). The different types are
+          represented as the <a>BasicCardType</a> enum.
         </dd>
         <dt>
           <dfn>supportedCryptogramTypes</dfn>
         </dt>
         <dd>
           This member is an optional list of <a>Payment Network</a>-specific
-          strings that describe the types of <a>cryptogram</a> accepted by the
-          payee.
+          strings that describe the types of <a>Token Cryptogram</a> accepted
+          by the payee.
         </dd>
         <dt>
           <dfn>usageType</dfn>
@@ -298,8 +297,8 @@ new PaymentRequest(methodData, details);
         <dd>
           A card can be of type "credit", "debit", or "prepaid", as derived
           from the issuer identification number (the first eight digits of the
-          <dfn data-cite="!ISO7812-1">primary account number</dfn> (PAN). The
-          different types are represented as the <a>BasicCardType</a> enum.
+          <a>primary account number</a> (PAN). The different types are
+          represented as the <a>BasicCardType</a> enum.
         </dd>
         <dt>
           <dfn>keyProviderURL</dfn>
@@ -355,7 +354,7 @@ new PaymentRequest(methodData, details);
            required    DOMString       displayExpiryMonth;
            required    DOMString       displayExpiryYear; 
            required    DOMString       displayNetwork;
-           required    EncryptedTokenizedCard encryptedTokenizedCard;
+           required    EncryptedTokenizedCard encryptedDetails;
          };
       </pre>
       <dl>
@@ -398,7 +397,7 @@ new PaymentRequest(methodData, details);
           The name of the actual <a>Payment Network</a> of the card.
         </dd>
         <dt>
-          <dfn>encryptedTokenizedCard</dfn> member
+          <dfn>encryptedDetails</dfn> member
         </dt>
         <dd>
           This member includes <a>EncryptedTokenizedCard</a> information.
@@ -464,7 +463,7 @@ new PaymentRequest(methodData, details);
           </dt>
           <dd>
             This member is a <a>Payment Network</a>-specific string that
-            describes the <a>cryptogram</a> type.
+            describes the <a>Token Cryptogram</a> type.
           </dd>
           <dt>
             <dfn>trid</dfn> member
@@ -544,10 +543,6 @@ new PaymentRequest(methodData, details);
         <dd>
           The terms <dfn data-cite="!EMVCO-3DS">Electronic Commerce
           Indicator</dfn> is defined in [[EMVCO-3DS]].
-          <p class="issue" title="EMV-like Security" data-number="28">
-            The fact of referencing 3D Secure here means that the data returned
-            is not strictly defined by EMV Tokenization.
-          </p>
         </dd>
         <dt>
           Response Data Encryption
@@ -555,6 +550,15 @@ new PaymentRequest(methodData, details);
         <dd>
           [[!RESPONSE-DATA-ENCRYPTION]] is a work in progress of the Web
           Payments Working Group.
+        </dd>
+        <dt>
+          ISO7812-1
+        </dt>
+        <dd>
+          ISO 7812-1 specifies a numbering system for the identification of the
+          card issuers, the format of the issuer identification number (IIN)
+          and the <dfn data-cite="ISO7812-1">primary account number</dfn>
+          (PAN).
         </dd>
       </dl>
     </section>
