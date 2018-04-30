@@ -191,14 +191,25 @@ new PaymentRequest(methodData, details);
         </div>
       </section>
     </section>
-    <section id="prerequisites">
+    <section id="assumptions">
       <h2>
-        Payment Method Prerequisites
+        Assumptions
       </h2>
-      <p>
-        The following are prerequisites for using this payment method.
-      </p>
       <ul>
+        <li>This specification is designed to address two primary use cases:
+          <ul>
+            <li>Guest checkout, where the token in the response is for one-time
+            use.
+            </li>
+            <li>Card-on-file, where the token in the response can be re-used
+            for future payments, including recurring payments.
+            </li>
+          </ul>
+        </li>
+        <li>This specification focuses on standardizing data from an arbitrary
+        payment handler at transaction time. How provisioning takes place lies
+        outside the scope of this specification.
+        </li>
         <li>A payment handler MUST be able to access the services of one or
         more <a>Token Service Providers</a>.
         </li>
@@ -231,8 +242,11 @@ new PaymentRequest(methodData, details);
       <pre class="idl">
         dictionary TokenizedCardRequest{
           sequence&lt;DOMString&gt;       supportedNetworks;
-          sequence&lt;BasicCardType&gt;        supportedTypes;
-          required DOMString        keyProviderURL; 
+          sequence&lt;BasicCardType&gt;   supportedTypes;
+          optional sequence&lt;DOMString&gt; supportedCryptogramTypes;
+          optional &lt;TokenUsageType&gt; usageType;
+          optional &lt;DOMString&gt;      payeeID;
+          required DOMString              keyProviderURL;
         };
       </pre>
       <p>
@@ -244,13 +258,43 @@ new PaymentRequest(methodData, details);
           <dfn>supportedNetworks</dfn>
         </dt>
         <dd>
-          A sequence of identifiers for card networks that the merchant
-          accepts. W3C maintains a <a data-cite="card-network-ids">list of
-          approved card network identifiers</a>.
+          A sequence of identifiers for card networks that the payee accepts.
+          W3C maintains a <a data-cite="card-network-ids">list of approved card
+          network identifiers</a>.
         </dd>
         <dt>
           <dfn>supportedTypes</dfn>
         </dt>
+        <dd>
+          A card can be of type "credit", "debit", or "prepaid", as derived
+          from the issuer identification number (the first eight digits of the
+          <dfn data-cite="!ISO7812-1">primary account number</dfn> (PAN). The
+          different types are represented as the <a>BasicCardType</a> enum.
+        </dd>
+        <dt>
+          <dfn>supportedCryptogramTypes</dfn>
+        </dt>
+        <dd>
+          This member is an optional list of <a>Payment Network</a>-specific
+          strings that describe the types of <a>cryptogram</a> accepted by the
+          payee.
+        </dd>
+        <dt>
+          <dfn>usageType</dfn>
+        </dt>
+        <dd>
+          A payee may request a <a>TokenUsageType</a>. If not present, the
+          value of this member defaults to "one-time".
+        </dd>
+        <dt>
+          <dfn>payeeID</dfn>
+        </dt>
+        <dd>
+          This Member is an optional <a>Payment Network</a>-specific string
+          that the <a>Token Service Provider</a> may use to constrain the token
+          for us by a single party. This is called a "merchant identifier" in
+          the EMVCO Tokenization Specification.
+        </dd>
         <dd>
           A card can be of type "credit", "debit", or "prepaid", as derived
           from the issuer identification number (the first eight digits of the
@@ -276,6 +320,29 @@ new PaymentRequest(methodData, details);
       <p class="issue" title="Token Properties for Matching" data-number="25">
       </p>
       <p class="issue" title="Multiuse Tokens" data-number="20"></p>
+    </section>
+    <section data-dfn-for="TokenUsageType" data-link-for="TokenUsageType">
+      <h2>
+        <dfn>TokenUsageType</dfn> enum
+      </h2>
+      <pre class="idl">
+          enum TokenUsageType { "one-time", "card-on-file" };
+        </pre>
+      <dl>
+        <dt>
+          "<dfn>one-time</dfn>"
+        </dt>
+        <dd>
+          Token is for first- and one-time use.
+        </dd>
+        <dt>
+          "<dfn>card-on-file</dfn>"
+        </dt>
+        <dd>
+          Token may be used for multiple transactions, including recurring
+          payments.
+        </dd>
+      </dl>
     </section>
     <section data-dfn-for="TokenizedCardResponse" data-link-for=
     "TokenizedCardResponse">
@@ -350,6 +417,9 @@ new PaymentRequest(methodData, details);
           [[RESPONSE-DATA-ENCRYPTION]].
         </p>
         <p class="issue" title="Encryption Details" data-number="35"></p>
+        <p class="issue" title=
+        "Should encryption of tokenized card payment data be optional?"
+        data-number="39"></p>
         <pre class="idl">
           dictionary EncryptedTokenizedCard {
            required DOMString       cardNumber;
@@ -395,7 +465,7 @@ new PaymentRequest(methodData, details);
           </dt>
           <dd>
             This member is a <a>Payment Network</a>-specific string that
-            described the <a>cryptogram</a> type.
+            describes the <a>cryptogram</a> type.
           </dd>
           <dt>
             <dfn>trid</dfn> member
@@ -464,7 +534,8 @@ new PaymentRequest(methodData, details);
           <dfn data-lt="Payment Network" data-cite="EMVCO-TOKENIZATION">Payment
           Networks</dfn>, <dfn data-lt="Token Service Provider" data-cite=
           "EMVCO-TOKENIZATION">Token Service Providers</dfn>, <dfn data-cite=
-          "EMVCO-TOKENIZATION">Token Requestor ID</dfn> and <dfn data-cite=
+          "EMVCO-TOKENIZATION">Token Requestor ID</dfn>, <dfn data-cite=
+          "EMVCO-TOKENIZATION">Merchant Identifier</dfn> and <dfn data-cite=
           "EMVCO-TOKENIZATION">Tokenized Payment Method Credentials</dfn> are
           defined in [[EMVCO-TOKENIZATION]].
         </dd>
