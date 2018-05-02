@@ -329,7 +329,9 @@ new PaymentRequest(methodData, details);
         </dt>
         <dd>
           The payee expects to use the token only once (e.g., for guest
-          checkout).
+          checkout), but the token may be re-used in some payee-initiated
+          scenarios (e.g., for partial shipment, incremental charges, and
+          resubmission use cases).
         </dd>
         <dt>
           "<dfn>card-on-file</dfn>"
