@@ -195,15 +195,18 @@ new PaymentRequest(methodData, details);
         Assumptions
       </h2>
       <ul>
-        <li>This specification is designed to address two primary use cases:
+        <li>This specification is designed to address these primary use cases:
           <ul>
-            <li>Guest checkout, where the token in the response is for one-time
-            use.
+            <li>Guest checkout
             </li>
-            <li>Card-on-file, where the token in the response can be re-used
-            for future payments, including recurring payments.
+            <li>Card-on-file payments
+            </li>
+            <li>Recurring payments
             </li>
           </ul>
+          <p>
+            See the <a>TokenUsageType</a> for more information.
+          </p>
         </li>
         <li>This specification focuses on standardizing data from an arbitrary
         payment handler at transaction time. How provisioning takes place lies
@@ -318,21 +321,33 @@ new PaymentRequest(methodData, details);
         <dfn>TokenUsageType</dfn> enum
       </h2>
       <pre class="idl">
-          enum TokenUsageType { "one-time", "card-on-file" };
+          enum TokenUsageType { "one-time", "card-on-file", "recurring" };
         </pre>
       <dl>
         <dt>
           "<dfn>one-time</dfn>"
         </dt>
         <dd>
-          Token is for first- and one-time use.
+          The payee expects to use the token only once (e.g., for guest
+          checkout).
         </dd>
         <dt>
           "<dfn>card-on-file</dfn>"
         </dt>
         <dd>
-          Token may be used for multiple transactions, including recurring
-          payments.
+          The payee expects to re-use the token for as yet uknown future
+          transactions, including payer-initiated transactions and
+          payee-initiated transactions (e.g., for partial shipment, incremental
+          charges, and resubmission use cases). Whether and how the payee
+          requests a new <a>Token Cryptogram</a> for future transactions is
+          outside the scope of this specification.
+        </dd>
+        <dt>
+          "<dfn>recurring</dfn>"
+        </dt>
+        <dd>
+          The payee expects to re-use the token exclusively for a recurring
+          payment according to an agreement with the payer.
         </dd>
       </dl>
     </section>
