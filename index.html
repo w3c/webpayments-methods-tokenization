@@ -197,7 +197,7 @@ new PaymentRequest(methodData, details);
       <ul>
         <li>This specification is designed to address these primary use cases:
           <ul>
-            <li>Guest checkout
+            <li>Single transaction
             </li>
             <li>Card-on-file payments
             </li>
@@ -328,10 +328,10 @@ new PaymentRequest(methodData, details);
           "<dfn>one-time</dfn>"
         </dt>
         <dd>
-          The payee expects to use the token only once (e.g., for guest
-          checkout), but the token may be re-used in some payee-initiated
-          scenarios (e.g., for partial shipment, incremental charges, and
-          resubmission use cases).
+          The payee expects to use the token for a single authorization. How
+          exactly the payee can use the token (e.g., for a charge, an update to
+          the authorization, a partial refun, a second partial shipment, or
+          incremental charges) is outside the scope of this specification.
         </dd>
         <dt>
           "<dfn>card-on-file</dfn>"
