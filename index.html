@@ -51,10 +51,10 @@
             "publisher": "EMVCo",
             "title": "EMV® 3-D Secure"
           },
-          "RESPONSE-DATA-ENCRYPTION": {
-            "href": "https://github.com/w3c/webpayments-crypto/wiki/Encryption",
+          "webpayments-crypto": {
+            "href": "https://w3c.github.io/webpayments-crypto/",
             "publisher": "W3C",
-            "title": "Encryption (PROPOSAL)"
+            "title": "Payment Method Encryption"
           }
         },
       };
@@ -231,11 +231,6 @@ new PaymentRequest(methodData, details);
         part of the <code>data</code> argument to the PaymentRequest
         constructor.
       </p>
-      <p class="issue" title="Linkage to BasicCard Spec" data-number="17">
-        The task force is still discussing whether this specification should
-        include terms common to Basic Card by reference or redefine them in
-        line.
-      </p>
       <pre class="idl">
         dictionary TokenizedCardRequest{
           sequence&lt;DOMString&gt;       supportedNetworks;
@@ -307,9 +302,14 @@ new PaymentRequest(methodData, details);
             key formats are acceptable, and any constraints? #1</a> .
           </p>
         </dd>
+        <dd>
+          <p class="issue" title="Linkage to BasicCard Spec" data-number="17">
+            The task force is still discussing whether this specification
+            should include terms common to Basic Card by reference or redefine
+            them in line.
+          </p>
+        </dd>
       </dl>
-      <p class="issue" title="Token Properties for Matching" data-number="25">
-      </p>
     </section>
     <section data-dfn-for="TokenUsageType" data-link-for="TokenUsageType">
       <h2>
@@ -360,7 +360,7 @@ new PaymentRequest(methodData, details);
            required    DOMString       displayExpiryMonth;
            required    DOMString       displayExpiryYear; 
            required    DOMString       displayNetwork;
-           required    EncryptedTokenizedCard encryptedDetails;
+           required    DOMString       encryptedDetails;
          };
       </pre>
       <dl>
@@ -406,22 +406,25 @@ new PaymentRequest(methodData, details);
           <dfn>encryptedDetails</dfn> member
         </dt>
         <dd>
-          This member includes <a>EncryptedTokenizedCard</a> information.
+          This member is a string that represents <a>EncryptedTokenizedCard</a>
+          information, encrypted with the <a data-lt=
+          "TokenizedCardRequest.keyProviderURL">keyProviderURL</a> according to
+          [[webpayments-crypto]].
         </dd>
       </dl>
+      <p class="issue" data-number="38"></p>
+      <p class="issue" data-number="40"></p>
+      <p class="issue" data-number="42"></p>
       <section data-dfn-for="EncryptedTokenizedCard" data-link-for=
       "EncryptedTokenizedCard">
         <h2>
           <dfn>EncryptedTokenizedCard</dfn> dictionary
         </h2>
         <p>
-          This dictionary represents data encrypted with the key identified by
-          the <a data-lt=
-          "TokenizedCardRequest.keyProviderURL">keyProviderURL</a> according to
-          [[RESPONSE-DATA-ENCRYPTION]]. Note that the fields of this dictionary
-          do not themselves influence the encryption.
+          This dictionary defines the sensitive data that is to be encrypted.
+          Note that the fields of this dictionary do not themselves influence
+          the encryption.
         </p>
-        <p class="issue" title="Encryption Details" data-number="35"></p>
         <p class="issue" title=
         "Should encryption of tokenized card payment data be optional?"
         data-number="39"></p>
@@ -490,6 +493,188 @@ new PaymentRequest(methodData, details);
         </dl>
       </section>
     </section>
+    <section id="interfacing">
+      <h2>
+        Interfacing with a payment request
+      </h2>
+      <section>
+        <h3>
+          Steps to check if a payment can be made
+        </h3>
+        <p>
+          The <dfn>steps to check if a payment can be made</dfn> by a Payment
+          Handler that handles "tokenized-card" takes
+          <a>TokenizedCardRequest</a> <var>request</var> as input. It returns
+          either true or false:
+        </p>
+        <ol class="algorithm">
+          <li>Let <var>cards</var> be a <a data-cite="infra#list">list</a> of
+          <a>cards</a> associated with this payment handler.
+          </li>
+          <li>If <var>cards</var> <a data-cite="infra#list-is-empty">is
+          empty</a>, return false.
+          </li>
+          <li>Let <var>networks</var> be an empty <code><a data-cite=
+          "!WEBIDL#idl-DOMString">DOMString</a></code> sequence.
+          </li>
+          <li>Let <var>types</var> be an empty <a>BasicCardType</a> sequence.
+          </li>
+          <li>Let <var>cryptograms</var> be an empty <code><a data-cite=
+          "!WEBIDL#idl-DOMString">DOMString</a></code> sequence.
+          </li>
+          <li>Let <var>usage</var> be the value of
+          <var>request</var>["usageType"] if present, otherwise set it to
+          "one-time". If the value of <var>usage</var> is not a legal value of
+          <a>TokenUsageType</a>, set <var>usage</var> to "one-time".
+          </li>
+          <li>If <var>request</var>["supportedTypes"] is present, append each
+          item in <var>request</var>["supportedTypes"] to <var>types</var>.
+          </li>
+          <li>If <var>request</var>["supportedNetworks"] is present, append
+          each item in <var>request</var>["supportedNetworks"] to
+          <var>networks</var>.
+          </li>
+          <li>If <var>request</var>["supportedCryptogramTypes"] is present,
+          append each item in <var>request</var>["supportedCryptogramTypes"] to
+          <var>cryptograms</var>.
+          </li>
+          <li>For each <var>card</var> in <var>cards</var>:
+            <ol>
+              <li>Let <var>isSupported</var> be the result of running the
+              <a>steps to check if an instrument is supported</a>, passing in
+              <var>card</var>, <var>networks</var>, <var>types</var>,
+              <var>cryptograms</var>, <var>usage</var>
+              </li>
+              <li>If <var>isSupported</var> is true, then return true.
+              </li>
+            </ol>
+          </li>
+          <li>Return false.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h3>
+          Steps to check if an instrument is supported
+        </h3>
+        <p class="note">
+          This section defines the <dfn>steps to check if an instrument is
+          supported</dfn>, that is: browser/mediator behavior for native
+          support of this payment method. The editors will update this section
+          once there is confidence that browser/mediators are likely to
+          implement this payment method natively.
+        </p>
+      </section>
+      <section>
+        <h3>
+          Steps to respond to a payment request
+        </h3>
+        <p>
+          The <dfn>steps to respond to a payment request</dfn> are given by the
+          following algorithm. If the end user inputs or selects a <a>card</a>
+          that meets the constraints of <a>TokenizedCardRequest</a>
+          <var>data</var>, the algorithm returns a card as a
+          <a>TokenizedCardResponse</a>.
+        </p><!-- Are cardholderName, billingAddress, PAR required? -->
+        <ol class="algorithm" data-link-for="TokenizedCardResponse">
+          <li data-link-for="TokenizedCardRequest">Let <var>networks</var> be
+          <var>data</var>["<a>supportedNetworks</a>"], or an empty list if
+          <var>data</var>["<a>supportedNetworks</a>"] is missing.
+          </li>
+          <li data-link-for="TokenizedCardRequest">Let <var>types</var> be
+          <var>data</var>["<a>supportedTypes</a>"], or an empty list if
+          <var>data</var>["<a>supportedTypes</a>"] is missing.
+          </li>
+          <li data-link-for="TokenizedCardRequest">Let <var>key</var> be the
+          result of fetching <var>data</var>["<a>keyProviderURL</a>"]. In case
+          of an error, throw throw an error abort these steps.
+          </li>
+          <li>Let <var>card</var> be a <a>TokenizedCardResponse</a>.
+          </li>
+          <li>To provide a hint to help the user select this <a>card</a>,
+          either set <var>card</var>["<a>displayLast4</a>"] to a string that
+          includes the last four digits of the <a>primary account number</a>
+          (e.g., "*** 5050") or set <var>card</var>["<a>displayMaskedCard</a>"]
+          to a string that represents different non-sensitive information about
+          the card (e.g., "Francine Business").
+          </li>
+          <li>Set <var>card</var>["<a>displayExpiryMonth</a>"] to two-digit
+          string ranging from "<code>01</code>" to "<code>12</code>", or the
+          empty string if the user chooses not to provide it or the <a>type</a>
+          doesn't require an expiry month.
+          </li>
+          <li>Set <var>card</var>["<a>displayExpiryYear</a>"] to a four-digit
+          string in the range "<code>0000</code>" to "<code>9999</code>", or
+          the empty string if the user chooses not to provide it or the
+          <a>type</a> doesn't require an expiry year.
+          </li>
+          <li>Set <var>card</var>["<a>displayNetwork</a>"] to a string that
+          identifies the card <a>network</a>.
+          </li>
+          <li>Set <var>cardNumber</var> to a tokenized representation of
+          <a>primary account number</a>, a string of digits that ranges from 10
+          to 19 digits.
+          </li>
+          <li>Set <var>expiryYear</var> to two-digit string ranging from
+          "<code>01</code>" to "<code>12</code>", or the empty string if the
+          user chooses not to provide it or the <a>type</a> doesn't require an
+          expiry month.
+          </li>
+          <li>Set <var>expiryMonth</var> to a four-digit string in the range
+          "<code>0000</code>" to "<code>9999</code>", or the empty string if
+          the user chooses not to provide it or the <a>type</a> doesn't require
+          an expiry year.
+          </li>
+          <li>Set <var>cryptogram</var> to a <a>Token Cryptogram</a>, a
+          <a>Payment Network</a>-specific string.
+          </li>
+          <li>Set <var>typeOfcryptogram</var> to a <a>Payment
+          Network</a>-specific string that represents the type of the
+          <var>cryptogram</var>.
+          </li>
+          <li>Set <var>trid</var> to a <a>Token Requestor ID</a>, an 11-digit
+          numeric value.
+          </li>
+          <li>Set <var>eci</var> to <a>Electronic Commerce Indicator</a>, a <a>
+            Payment Network</a>-specific string.
+          </li>
+          <li>Set <var>card</var>["<a>encryptedDetails</a>"] to a string
+          following the <a>steps for response data encryption</a>, where the
+          <a>content encryption key</a> is set to <var>key</var> and the
+          <a>plaintext encryption</a> algorithm takes as input
+          <var>cardNumber</var>, <var>expiryMonth</var>, <var>expiryYear</var>,
+          <var>cryptogram</var>, <var>typeOfcryptogram</var>, <var>trid</var>,
+          and <var>eci</var>.
+          </li><!-- If billing address is required -->
+          <!-- 
+          <li>If a billing address is not required for this card <a>type</a>,
+          then set <var>card</var>["<a>billingAddress</a>"] to null. Otherwise:
+            <ol>
+              <li>Let <var>redactList</var> be « "phone" ».
+              </li>
+              <li>Let <var>billingAddress</var> be the result running the steps
+              to <a data-cite=
+              "payment-request#dfn-create-a-payment-address">create a
+              <code>PaymentAddress</code> from user-provided input</a> with
+              <var>redactList</var>.
+              </li>
+              <li>Set <var>card</var>["<a>billingAddress</a>"] to
+              <var>billingAddress</var>.
+              </li>
+            </ol>
+          </li>
+          -->
+          <li>Return <var>card</var>.
+          </li>
+        </ol>
+        <p class="note" title="Validation">
+          Until such time as we learn of intention by browsers/mediators to
+          implement this specification, we have eliminated discussion of
+          validation in this algorithm.
+        </p>
+        <p class="issue" data-number="43"></p>
+      </section>
+    </section>
     <section id="security">
       <h2>
         Security and Privacy Considerations
@@ -525,9 +710,15 @@ new PaymentRequest(methodData, details);
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!payment-method-basic-card#method-id">basic-card</dfn> and
+          "!payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
-          "!payment-method-basic-card#basiccardtype-enum">BasicCardType</dfn>
+          "!payment-method-basic-card#basiccardtype-enum">BasicCardType</dfn>,
+          <dfn data-lt="card" data-cite=
+          "!payment-method-basic-card#cards">cards</dfn>, <dfn data-cite=
+          "!payment-method-basic-card#type">type</dfn>, <dfn data-lt="network"
+          data-cite="!payment-method-basic-card#networks">networks</dfn>,
+          <dfn data-cite=
+          "!payment-method-basic-card#networks">primary-account-number</dfn>
           are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
@@ -552,11 +743,16 @@ new PaymentRequest(methodData, details);
           Indicator</dfn> is defined in [[EMVCO-3DS]].
         </dd>
         <dt>
-          Response Data Encryption
+          Payment Method Encryption
         </dt>
         <dd>
-          [[!RESPONSE-DATA-ENCRYPTION]] is a work in progress of the Web
-          Payments Working Group.
+          The <dfn>steps for response data encryption</dfn> are described in
+          [[!webpayments-crypto]]. That specification defines the terms
+          <dfn data-cite="!webpayments-crypto#key">content encryption
+          key</dfn>, <dfn data-cite="!webpayments-crypto#message">message
+          structure</dfn>, and <dfn data-cite=
+          "!webpayments-crypto#plaintext-encryption">plaintext
+          encryption</dfn>.
         </dd>
         <dt>
           ISO7812-1
