@@ -268,8 +268,8 @@ new PaymentRequest(methodData, details);
         </dt>
         <dd>
           This member is an optional list of <a>Payment Network</a>-specific
-          strings that describe the types of <a>Token Cryptogram</a> accepted
-          by the payee.
+          strings, each one a <dfn>cryptogramType</dfn>. This list describes
+          the types of <a>Token Cryptogram</a> accepted by the payee.
         </dd>
         <dt>
           <dfn>usageType</dfn>
@@ -557,13 +557,52 @@ new PaymentRequest(methodData, details);
         <h3>
           Steps to check if an instrument is supported
         </h3>
-        <p class="note">
-          This section defines the <dfn>steps to check if an instrument is
-          supported</dfn>, that is: browser/mediator behavior for native
-          support of this payment method. The editors will update this section
-          once there is confidence that browser/mediators are likely to
-          implement this payment method natively.
+        <p>
+          The <dfn>steps to check if an instrument is supported</dfn> takes as
+          input a <a>card</a> <var>card</var>, a <a data-cite=
+          "infra#list">list</a> of <a>type</a> <var>types</var>, a
+          <a data-cite="infra#list">list</a> of <a>network</a>
+          <var>networks</var>, a <a data-cite="infra#list">list</a> of
+          <a>cryptogramType</a> <var>cryptograms</var> and a <a>usageType</a>
+          <var>usage</var>. It returns true if the <var>card</var> is
+          supported, false otherwise.
         </p>
+        <ol class="algorithm">
+          <li>If <var>types</var> <a data-cite="!infra#list-is-empty">is
+          empty</a> and <var>networks</var> <a data-cite=
+          "!infra#list-is-empty">is empty</a>, return true.
+          </li>
+          <li>If <var>networks</var> <a data-cite="!infra#list-is-empty">is not
+          empty</a>:
+            <ol>
+              <li>If <var>networks</var> does not include the <a>card</a>'s <a>
+                network</a>, return false.
+              </li>
+            </ol>
+          </li>
+          <li>If <var>types</var> <a data-cite="!infra#list-is-empty">is not
+          empty</a>:
+            <ol>
+              <li>If <var>types</var> does not include the <a>card</a>'s
+              <a>type</a>, return false.
+              </li>
+            </ol>
+          </li>
+          <li>If <var>cryptograms</var> <a data-cite="!infra#list-is-empty">is
+          not empty</a>:
+            <ol>
+              <li>If <var>cryptograms</var> does not include a
+              <a>cryptogramType</a> supported by the <a>payment handler</a>,
+              return false.
+              </li>
+            </ol>
+          </li>
+          <li>If <var>usage</var> is not supported by the <a>payment
+          handler</a>, return false.
+          </li>
+          <li>Return true.
+          </li>
+        </ol>
       </section>
       <section>
         <h3>
