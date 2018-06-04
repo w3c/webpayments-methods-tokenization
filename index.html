@@ -563,9 +563,9 @@ new PaymentRequest(methodData, details);
           "infra#list">list</a> of <a>type</a> <var>types</var>, a
           <a data-cite="infra#list">list</a> of <a>network</a>
           <var>networks</var>, a <a data-cite="infra#list">list</a> of
-          <a>cryptogramType</a> <var>cryptograms</var> and a <a>usageType</a>
-          <var>usage</var>. It returns true if the <var>card</var> is
-          supported, false otherwise.
+          <a>cryptogramType</a> <var>cryptograms</var> and a <a data-link-for=
+          "TokenizedCardRequest">usageType</a> <var>usage</var>. It returns
+          true if the <var>card</var> is supported, false otherwise.
         </p>
         <ol class="algorithm">
           <li>If <var>types</var> <a data-cite="!infra#list-is-empty">is
@@ -713,6 +713,27 @@ new PaymentRequest(methodData, details);
         </p>
         <p class="issue" data-number="43"></p>
       </section>
+    </section>
+    <section id="conformance">
+      <p>
+        There is only one class of product that can claim conformance to this
+        specification: a <dfn>payment handler</dfn>.
+      </p>
+      <p>
+        A conforming <a>payment handler</a> MUST:
+      </p>
+      <ul>
+        <li data-tests=
+        "payment-method-basic-card/payment-request-canmakepayment-method.https.html">
+        when queried, claim to support the "<a>tokenized-card</a>"
+        <a>standardized payment method identifier</a>.
+        </li>
+        <li data-tests=
+        "payment-method-basic-card/basiccardresponse-member-formats-manual.https.html">
+        return <a>TokenizedCardResponse</a>s whose members are formatted per
+        their definition in this specification.
+        </li>
+      </ul>
     </section>
     <section id="security">
       <h2>
