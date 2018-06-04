@@ -16,6 +16,7 @@
           shortName:  "tokenized-card",
           edDraftURI:   "https://w3c.github.io/webpayments-methods-tokenization/",
           specStatus: "unofficial",
+          testSuiteURI: "https://w3c-test.org/payment-method-tokenized-card/",
           editors: [
                 {
                     name:      "Keyur Patel",
@@ -762,14 +763,15 @@ new PaymentRequest(methodData, details);
         </dt>
         <dd>
           The term <dfn data-lt="payment method identifiers">payment method
-          identifier</dfn> is defined by the Payment Method Identifier
-          specification [[!payment-method-id]].
+          identifier</dfn> and <dfn>standardized payment method identifier are
+          defined by the Payment Method Identifier specification
+          [[!payment-method-id]].</dfn>
         </dd>
         <dt>
-          Basic Card Payment
+          <dfn>Basic Card Payment</dfn>
         </dt>
         <dd>
-          The terms <dfn data-cite=
+          <dfn>The terms <dfn data-cite=
           "!payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
           "!payment-method-basic-card#basiccardtype-enum">BasicCardType</dfn>,
@@ -779,7 +781,7 @@ new PaymentRequest(methodData, details);
           data-cite="!payment-method-basic-card#networks">networks</dfn>,
           <dfn data-cite=
           "!payment-method-basic-card#networks">primary-account-number</dfn>
-          are defined in [[!payment-method-basic-card]].
+          are defined in [[!payment-method-basic-card]].</dfn>
         </dd>
         <dt>
           EMVCo Tokenisation
