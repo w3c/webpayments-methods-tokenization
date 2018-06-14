@@ -121,10 +121,12 @@
         </h3>
         <pre class="example">
 const methodData = [{
-  supportedMethods: ["tokenized-card"],
+  supportedMethods: ['tokenized-card'],
   data: {
     supportedNetworks: ['mastercard','visa', 'amex', 'discover', 'jcb','unionpay'],
     supportedTypes: ['credit','debit'],
+    usageType: 'one-time',
+    payeeID: '234987',
     keyProviderURL: 'https://pspKeyProvider.example/tokenizedCardPublicKey',
   }
 }];
@@ -303,13 +305,6 @@ new PaymentRequest(methodData, details);
             key formats are acceptable, and any constraints? #1</a> .
           </p>
         </dd>
-        <dd>
-          <p class="issue" title="Linkage to BasicCard Spec" data-number="17">
-            The task force is still discussing whether this specification
-            should include terms common to Basic Card by reference or redefine
-            them in line.
-          </p>
-        </dd>
       </dl>
     </section>
     <section data-dfn-for="TokenUsageType" data-link-for="TokenUsageType">
@@ -356,15 +351,25 @@ new PaymentRequest(methodData, details);
       </h2>
       <pre class="idl">
         dictionary TokenizedCardResponse {
+                       DOMString       cardholderName;
                        DOMString       displayMaskedCard;
                        DOMString       displayLast4;
            required    DOMString       displayExpiryMonth;
            required    DOMString       displayExpiryYear; 
            required    DOMString       displayNetwork;
+                       DOMString       par;
+                       DOMString       tokenreferenceid;
+                       PaymentAddress? billingAddress;
            required    DOMString       encryptedDetails;
          };
       </pre>
       <dl>
+        <dt>
+          <dfn>cardholderName</dfn> member
+        </dt>
+        <dd>
+          The <a>card holder's name</a> as it appears on the <a>card</a>.
+        </dd>
         <dt>
           <dfn>displayLast4</dfn> member
         </dt>
@@ -404,6 +409,36 @@ new PaymentRequest(methodData, details);
           The name of the actual <a>Payment Network</a> of the card.
         </dd>
         <dt>
+          <dfn>billingAddress</dfn> member
+        </dt>
+        <dd>
+          A <a>PaymentAddress</a> that represents the <a>billing address</a>
+          associated with the <a>card</a>, or null.
+        </dd>
+        <dt>
+          <dfn>par</dfn> member
+        </dt>
+        <dd>
+          This optional member is a <a>Payment Account Reference</a> (or
+          <abbr>PAR</abbr>), which enables merchants, acquirers and payment
+          processors to link transactions initiated with affiliated Payment
+          Tokens to transactions based on the underlying <a>primary account
+          number</a>. The value is a composite field consisting of 29 uppercase
+          alphanumeric roman characters. See [[EMVCO-TOKENIZATION]] for more
+          details.
+        </dd>
+        <dt>
+          <dfn>tokenreferenceid</dfn> member
+        </dt>
+        <dd>
+          This optional member is a <a>Token Reference ID</a>, a substitute for
+          the <a data-lt="EncryptedTokenizedCard.cardNumber">cardNumber</a>
+          that does not expose information about the <a data-lt=
+          "EncryptedTokenizedCard.cardNumber">cardNumber</a> or the underlying
+          <a>primary account number</a>. It is a <a>Payment
+          Network</a>-specific string.
+        </dd>
+        <dt>
           <dfn>encryptedDetails</dfn> member
         </dt>
         <dd>
@@ -413,9 +448,6 @@ new PaymentRequest(methodData, details);
           [[webpayments-crypto]].
         </dd>
       </dl>
-      <p class="issue" data-number="38"></p>
-      <p class="issue" data-number="40"></p>
-      <p class="issue" data-number="42"></p>
       <section data-dfn-for="EncryptedTokenizedCard" data-link-for=
       "EncryptedTokenizedCard">
         <h2>
@@ -481,7 +513,8 @@ new PaymentRequest(methodData, details);
           </dt>
           <dd>
             This member is a <a>Token Requestor ID</a>, an 11-digit numeric
-            value set by the Token Service Provider.
+            value that identifies the token requestor (e.g., the <a>payment
+            handler</a>) and is used as part of authorization flows.
           </dd>
           <dt>
             <dfn>eci</dfn> member
@@ -615,7 +648,7 @@ new PaymentRequest(methodData, details);
           that meets the constraints of <a>TokenizedCardRequest</a>
           <var>data</var>, the algorithm returns a card as a
           <a>TokenizedCardResponse</a>.
-        </p><!-- Are cardholderName, billingAddress, PAR required? -->
+        </p>
         <ol class="algorithm" data-link-for="TokenizedCardResponse">
           <li data-link-for="TokenizedCardRequest">Let <var>networks</var> be
           <var>data</var>["<a>supportedNetworks</a>"], or an empty list if
@@ -630,6 +663,10 @@ new PaymentRequest(methodData, details);
           of an error, throw throw an error abort these steps.
           </li>
           <li>Let <var>card</var> be a <a>TokenizedCardResponse</a>.
+          </li>
+          <li>Set <var>card</var>["<a>cardholderName</a>"] to the <a>card
+          holder's name</a>, or the empty string if the user chooses not to
+          provide it.
           </li>
           <li>To provide a hint to help the user select this <a>card</a>,
           either set <var>card</var>["<a>displayLast4</a>"] to a string that
@@ -650,6 +687,28 @@ new PaymentRequest(methodData, details);
           </li>
           <li>Set <var>card</var>["<a>displayNetwork</a>"] to a string that
           identifies the card <a>network</a>.
+          </li>
+          <li>Set <var>card</var>["<a>par</a>"] to a 29-character string, or
+          the empty string if not available.
+          </li>
+          <li>Set <var>card</var>["<a>tokenreferenceid</a>"] to a <a>Token
+          Reference ID</a> string, or the empty string if not available.
+          </li>
+          <li>If a billing address is not required for this card <a>type</a>,
+          then set <var>card</var>["<a>billingAddress</a>"] to null. Otherwise:
+            <ol>
+              <li>Let <var>redactList</var> be « "phone" ».
+              </li>
+              <li>Let <var>billingAddress</var> be the result running the steps
+              to <a data-cite=
+              "payment-request#dfn-create-a-payment-address">create a
+              <code>PaymentAddress</code> from user-provided input</a> with
+              <var>redactList</var>.
+              </li>
+              <li>Set <var>card</var>["<a>billingAddress</a>"] to
+              <var>billingAddress</var>.
+              </li>
+            </ol>
           </li>
           <li>Set <var>cardNumber</var> to a tokenized representation of
           <a>primary account number</a>, a string of digits that ranges from 10
@@ -685,25 +744,7 @@ new PaymentRequest(methodData, details);
           <var>cardNumber</var>, <var>expiryMonth</var>, <var>expiryYear</var>,
           <var>cryptogram</var>, <var>typeOfcryptogram</var>, <var>trid</var>,
           and <var>eci</var>.
-          </li><!-- If billing address is required -->
-          <!-- 
-          <li>If a billing address is not required for this card <a>type</a>,
-          then set <var>card</var>["<a>billingAddress</a>"] to null. Otherwise:
-            <ol>
-              <li>Let <var>redactList</var> be « "phone" ».
-              </li>
-              <li>Let <var>billingAddress</var> be the result running the steps
-              to <a data-cite=
-              "payment-request#dfn-create-a-payment-address">create a
-              <code>PaymentAddress</code> from user-provided input</a> with
-              <var>redactList</var>.
-              </li>
-              <li>Set <var>card</var>["<a>billingAddress</a>"] to
-              <var>billingAddress</var>.
-              </li>
-            </ol>
           </li>
-          -->
           <li>Return <var>card</var>.
           </li>
         </ol>
@@ -768,10 +809,10 @@ new PaymentRequest(methodData, details);
           specification [[!payment-method-id]].
         </dd>
         <dt>
-          <dfn>Basic Card Payment</dfn>
+          Basic Card Payment
         </dt>
         <dd>
-          <dfn>The terms <dfn data-cite=
+          The terms <dfn data-cite=
           "!payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
           "!payment-method-basic-card#basiccardtype-enum">BasicCardType</dfn>,
@@ -780,8 +821,11 @@ new PaymentRequest(methodData, details);
           "!payment-method-basic-card#type">type</dfn>, <dfn data-lt="network"
           data-cite="!payment-method-basic-card#networks">networks</dfn>,
           <dfn data-cite=
-          "!payment-method-basic-card#networks">primary-account-number</dfn>
-          are defined in [[!payment-method-basic-card]].</dfn>
+          "!payment-method-basic-card#networks">primary-account-number</dfn>,
+          <dfn data-cite="!payment-method-basic-card#billingaddress">billing
+          address</dfn>, and <dfn data-cite=
+          "!payment-method-basic-card#cardholder&quot;sname">card holder's
+          name</dfn> are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
           EMVCo Tokenisation
@@ -794,8 +838,10 @@ new PaymentRequest(methodData, details);
           "EMVCO-TOKENIZATION">Token Service Providers</dfn>, <dfn data-cite=
           "EMVCO-TOKENIZATION">Token Requestor ID</dfn>, <dfn data-cite=
           "EMVCO-TOKENIZATION">Merchant Identifier</dfn> and <dfn data-cite=
-          "EMVCO-TOKENIZATION">Tokenized Payment Method Credentials</dfn> are
-          defined in [[EMVCO-TOKENIZATION]].
+          "EMVCO-TOKENIZATION">Tokenized Payment Method Credentials</dfn>,
+          <dfn data-cite="EMVCO-TOKENIZATION">Token Reference ID</dfn>, and
+          <dfn data-cite="EMVCO-TOKENIZATION">Payment Account Reference</dfn>
+          are defined in [[EMVCO-TOKENIZATION]].
         </dd>
         <dt>
           EMVCo 3-D Secure
