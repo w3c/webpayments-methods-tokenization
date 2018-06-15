@@ -96,25 +96,45 @@
         Introduction
       </h2>
       <p>
-        This specification is a Payment Method Specification used by the
-        PaymentRequest API [[!payment-request]] to support tokenized card
-        payments. The tokens anticipated by this specification are "network" or
-        "issuer" tokens.
+        Network tokenization increases credit an debit card payment security in
+        several ways:
       </p>
+      <ul>
+        <li>It reduces exposure of a consumer's primary account number (PAN,
+        the number embossed on a card). This is achieved through the use of
+        surrogate data collectively called a token. Eliminating the exchange
+        and storage of card numbers mitigates the risks of fraud as a result of
+        data compromise and supports the growing merchant demand for enhanced
+        security.
+        </li>
+        <li>Tokens may include "domain controls" that limit how they may be
+        used, for example for a given site, transaction, or time period.
+        </li>
+        <li>Tokens may include dynamic data such as cryptograms and
+        authentication results validate authorized use.
+        </li>
+      </ul>
       <p>
-        Payment networks such as Mastercard, Visa, and American Express provide
-        tokenization services for credit cards and debit cards. The intention
-        of tokenization is to ensure that a consumer's primary account number
-        (PAN) is not exposed to potentially insecure merchant environments. To
-        increase the security of payment processing, merchants —or their
-        Payment Service Providers (PSPs)— may use tokens along with
-        cryptographically generated dynamic data.
+        Network tokens offer additional advantages over card numbers:
       </p>
+      <ul>
+        <li>If a consumer's card number is lost, stolen or replaced, a merchant
+        may still use a stored token associated with the card for future
+        transactions.
+        </li>
+        <li>Token reference IDs can further enhance security and add
+        flexibility when used in conjunction with tokens.
+        </li>
+      </ul>
       <p>
-        This document describes a payment method that achieves the security
-        goals of EMVCo tokenization specifications, within the usual Payment
-        Request API flow. The payment handler achieves this by leveraging
-        elements of [[EMVCO-TOKENIZATION]] and [[EMVCO-3DS]].
+        Network tokenization services are provided by payment networks (e.g.,
+        American Express, Discover, JCB, Mastercard, and Visa), issuing banks,
+        and other parties. This document describes how to connect these service
+        providers to the Payment Request [payment-request]ecosystem so that
+        merchants can request network or issuer tokens, and users can use
+        payment handlers that interact with token service providers. Data
+        requirements for these interactions are drawn from the EMVCo
+        specifications [[!EMVCO-TOKENIZATION]] and [[!EMVCO-3DS]].
       </p>
     </section>
     <section id="exampleData">
