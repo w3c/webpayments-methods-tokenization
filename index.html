@@ -96,46 +96,49 @@
         Introduction
       </h2>
       <p>
-        Network tokenization increases credit and debit card payment security
-        in several ways:
+        A network token replaces the number embossed on a credit or debit card
+        —the primary account number or PAN— with surrogate data. This
+        substitution offers several security benefits:
       </p>
       <ul>
-        <li>It reduces exposure of the user's primary account number (PAN, the
-        number embossed on a card). This is achieved through surrogate data
-        collectively called a token. Eliminating the exchange and storage of
-        card numbers mitigates fraud risks associated with data compromise and
-        supports the growing merchant demand for enhanced security.
+        <li>By storing tokens instead of the PAN, merchants can reduce the risk
+        of fraud due to data compromise.
         </li>
         <li>Tokens may include "domain controls" that reduce opportunities for
         misuse, for example by limiting usage to a given site, transaction, or
         time period.
         </li>
-        <li>Tokens may include dynamic data such as cryptograms and
-        authentication results for validation of authorized use.
+        <li>Some tokens may be accompanied by per-transaction (or, "dynamic")
+        data such as a ‘cryptogram’, ‘authentication value’ or ‘card
+        verification value’ to enable validation of authorized use.
         </li>
       </ul>
       <p>
-        Network tokens offer additional advantages over card numbers:
+        Network tokens offer additional benefits as well:
       </p>
       <ul>
         <li>If a user's card number is lost, stolen or replaced, a merchant may
         still use a stored token associated with the card for future
         transactions.
         </li>
-        <li>
-          <a>Token Reference ID</a>s can further enhance security and add
-          flexibility when used in conjunction with tokens.
+        <li>A merchant can reduce compliance burden in partnership with a
+        payment service provider though the use of <a>Token Reference ID</a>s:
+        the payment service provider stores the token while the merchant stores
+        the <a>Token Reference ID</a>.
         </li>
       </ul>
       <p>
-        Network tokenization services are provided by payment networks (e.g.,
-        American Express, Discover, JCB, Mastercard, and Visa), issuing banks,
-        and other parties. This document describes how to connect these service
-        providers to the Payment Request [[payment-request]] ecosystem so that
-        merchants can request network or issuer tokens, and users can use
-        payment handlers that request tokens from token service providers. Data
-        requirements are drawn from the EMVCo specifications
-        [[!EMVCO-TOKENIZATION]] and [[!EMVCO-3DS]].
+        Payment networks (e.g., American Express, China Union Pay, Discover,
+        JCB, Mastercard, and Visa) and issuing banks offer services that
+        provide the tokens described by this specification. Data requirements
+        are drawn from the EMVCo specifications [[!EMVCO-TOKENIZATION]] and
+        [[!EMVCO-3DS]].
+      </p>
+      <p>
+        This document describes how to connect these service providers to the
+        Payment Request [[payment-request]] ecosystem so that merchants can
+        request network and issuer tokens, and users can use payment handlers
+        that request these tokens from service providers.
       </p>
     </section>
     <section id="exampleData">
