@@ -280,7 +280,7 @@ new PaymentRequest(methodData, details);
       </p>
       <dl>
         <dt>
-          <dfn>supportedNetworks</dfn>
+          <dfn>supportedNetworks</dfn> member
         </dt>
         <dd>
           A sequence of identifiers for card networks that the payee accepts.
@@ -288,7 +288,7 @@ new PaymentRequest(methodData, details);
           network identifiers</a>.
         </dd>
         <dt>
-          <dfn>supportedTypes</dfn>
+          <dfn>supportedTypes</dfn> member
         </dt>
         <dd>
           A card can be of type "credit", "debit", or "prepaid", as derived
@@ -297,7 +297,7 @@ new PaymentRequest(methodData, details);
           represented as the <a>BasicCardType</a> enum.
         </dd>
         <dt>
-          <dfn>supportedCryptogramTypes</dfn>
+          <dfn>supportedCryptogramTypes</dfn> member
         </dt>
         <dd>
           This member is an optional list of <a>Payment Network</a>-specific
@@ -305,14 +305,14 @@ new PaymentRequest(methodData, details);
           the types of <a>Token Cryptogram</a> accepted by the payee.
         </dd>
         <dt>
-          <dfn>usageType</dfn>
+          <dfn>usageType</dfn> member
         </dt>
         <dd>
           A payee may request a <a>TokenUsageType</a>. If not present, the
           value of this member defaults to "one-time".
         </dd>
         <dt>
-          <dfn>payeeID</dfn>
+          <dfn>payeeID</dfn> member
         </dt>
         <dd>
           This Member is an optional <a>Payment Network</a>-specific string
@@ -321,7 +321,7 @@ new PaymentRequest(methodData, details);
           the EMVCO Tokenization Specification.
         </dd>
         <dt>
-          <dfn>keyProviderURL</dfn>
+          <dfn>keyProviderURL</dfn> member
         </dt>
         <dd>
           This member designates, via a URL, a public key trusted by the
