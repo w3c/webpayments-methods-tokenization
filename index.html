@@ -243,6 +243,20 @@ new PaymentRequest(methodData, details);
         <li>A payment handler MUST be able to access the services of one or
         more <a>Token Service Providers</a>.
         </li>
+        <li>A payee that uses Payment Request API is registered with its
+        <a>supportedNetworks</a>. This specification does not address that
+        registration process.
+        </li>
+        <li>(Issue 44). There is not yet agreement on one assumption of the
+        card-on-file use case: whether the payee has a backend integration
+        (direct or indirect) to one or more <a>Token Service Provider</a> in
+        order to request a new <a>Token Cryptogram</a> for subsequent
+        transactions. If we assume backend integration, then the
+        <code>tokenized-card</code> payment method would apply only to the
+        first token request. If we assume no backend integration, then we may
+        need a second payment method designed for cryptogram requests, and to
+        understand who should play the role of <a>Token Requestor</a>.
+        </li>
       </ul>
     </section>
     <section id="method-id">
@@ -361,12 +375,7 @@ new PaymentRequest(methodData, details);
           The payee expects to re-use the token for as yet uknown future
           transactions, including payer-initiated transactions and
           payee-initiated transactions (e.g., for partial shipment, incremental
-          charges, and resubmission use cases). Whether and how the payee
-          requests a new <a>Token Cryptogram</a> for future transactions is
-          outside the scope of this specification. However, the authors of this
-          specification assume that the necessary relationships among relevant
-          parties exist to enable interactions with and between the <a>Token
-          Requestor</a> and <a>Token Service Provider</a>.
+          charges, and resubmission use cases).
           <p class="issue" data-number="44"></p>
         </dd>
         <dt>
