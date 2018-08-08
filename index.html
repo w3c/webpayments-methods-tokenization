@@ -62,6 +62,11 @@
             "href": "https://w3c.github.io/webpayments-crypto/",
             "publisher": "W3C",
             "title": "Payment Method Encryption"
+          },
+          "3ds": {
+            "href": "https://w3c.github.io/3ds/index.html",
+            "publisher": "W3C",
+            "title": "3-D Secure 2 with Payment Request API"
           }
         },
       };
@@ -445,6 +450,7 @@ new PaymentRequest(methodData, details);
            required    DOMString       displayNetwork;
                        DOMString       par;
                        DOMString       tokenReferenceID;
+                       DOMString       eci;
                        PaymentAddress? billingAddress;
            required    DOMString       encryptedDetails;
          };
@@ -527,6 +533,15 @@ new PaymentRequest(methodData, details);
             Network</a>-specific string.
           </dd>
           <dt>
+            <dfn>eci</dfn> member
+          </dt>
+          <dd>
+            This optional member is an <a>Electronic Commerce Indicator</a>, a
+            <a>Payment Network</a>-specific string to indicate the results of
+            user authentication. For related discussion about authentication,
+            see [[!3ds]].
+          </dd>
+          <dt>
             <dfn>encryptedDetails</dfn> member
           </dt>
           <dd>
@@ -555,9 +570,8 @@ new PaymentRequest(methodData, details);
            required DOMString       expiryMonth;
            required DOMString       expiryYear;
            required DOMString       cryptogram;
-                    DOMString       typeOfCryptogram;
-                    DOMString       trid;
-                    DOMString       eci;
+           required DOMString       typeOfCryptogram;
+           required DOMString       trid;
           };
         </pre>
           <dl>
@@ -602,16 +616,18 @@ new PaymentRequest(methodData, details);
             </dt>
             <dd>
               This member is a <a>Token Requestor ID</a>, an 11-digit numeric
-              value that identifies the token requestor (e.g., the <a>payment
-              handler</a>) and is used as part of authorization flows.
+              value that identifies the <a>Token Requestor</a> (e.g., the
+              <a>payment handler</a>) and is used as part of authorization
+              flows.
             </dd>
             <dt>
-              <dfn>eci</dfn> member
+              <dfn>tokenRequestorKey</dfn> member
             </dt>
             <dd>
-              This member is an <a>Electronic Commerce Indicator</a>, a
-              <a>Payment Network</a>-specific string to indicate the results of
-              user authentication.
+              This member is a public key that belongs to the <a>Token
+              Requestor</a>. It is intended to be used in the
+              <code>token-cryptogram</code> payment method for card-on-file use
+              cases.
             </dd>
           </dl>
         </section>
@@ -644,14 +660,50 @@ new PaymentRequest(methodData, details);
                    TokenUsageType         usageType;
                    DOMString              payeeID;
         };
-      </pre>
-        <p data-link-for="TokenizedCardRequest">
-          The <code>TokenReferenceRequest</code> dictionary reuses the
-          following members from the <a>TokenizedCardRequest</a> dictionary:
-          <a>supportedNetworks</a>, <a>supportedTypes</a>,
-          <a>supportedCryptogramTypes</a>, <a>usageType</a>, and
-          <a>payeeID</a>.
-        </p>
+        </pre>
+        <dl>
+          <dt>
+            <dfn>supportedNetworks</dfn> member
+          </dt>
+          <dd>
+            A sequence of identifiers for card networks that the payee accepts.
+            W3C maintains a <a data-cite="card-network-ids">list of approved
+            card network identifiers</a>.
+          </dd>
+          <dt>
+            <dfn>supportedTypes</dfn> member
+          </dt>
+          <dd>
+            A card can be of type "credit", "debit", or "prepaid", as derived
+            from the issuer identification number (the first eight digits of
+            the <a>primary account number</a> (PAN). The different types are
+            represented as the <a>BasicCardType</a> enum.
+          </dd>
+          <dt>
+            <dfn>supportedCryptogramTypes</dfn> member
+          </dt>
+          <dd>
+            This member is an optional list of <a>Payment Network</a>-specific
+            strings, each one a <a>cryptogramType</a>. This list describes the
+            types of <a>Token Cryptogram</a> accepted by the payee.
+          </dd>
+          <dt>
+            <dfn>usageType</dfn> member
+          </dt>
+          <dd>
+            A payee may request a <a>TokenUsageType</a>. If not present, the
+            value of this member defaults to "one-time".
+          </dd>
+          <dt>
+            <dfn>payeeID</dfn> member
+          </dt>
+          <dd>
+            This Member is an optional <a>Payment Network</a>-specific string
+            that the <a>Token Service Provider</a> may use to constrain the
+            token for us by a single party. This is called a "merchant
+            identifier" in the EMVCO Tokenization Specification.
+          </dd>
+        </dl>
       </section>
       <section data-dfn-for="TokenReferenceResponse" data-link-for=
       "TokenReferenceResponse">
@@ -661,7 +713,8 @@ new PaymentRequest(methodData, details);
         <pre class="idl">
         dictionary TokenReferenceResponse {
                   required DOMString       tokenReferenceID;
-         };
+                  required DOMString       trid;
+                  };
               </pre>
         <dl>
           <dt>
@@ -671,6 +724,14 @@ new PaymentRequest(methodData, details);
             This member is a <a>Payment Network</a>-specific <a>Token Reference
             ID</a> that the payee uses on the backend to retrieve additional
             information about the card.
+          </dd>
+          <dt>
+            <dfn>trid</dfn> member
+          </dt>
+          <dd>
+            This member is a <a>Token Requestor ID</a>, an 11-digit numeric
+            value that identifies the token requestor (e.g., the <a>payment
+            handler</a>) and is used as part of authorization flows.
           </dd>
         </dl>
       </section>
@@ -697,7 +758,9 @@ new PaymentRequest(methodData, details);
         <pre class="idl">
         dictionary TokenCryptogramRequest{
            required DOMString   tokenRequestorID;
-           required DOMString   tokenReferenceID;
+                    DOMString   tokenReferenceID;
+                    DOMString   encryptedCardNumber;
+           sequence&lt;DOMString&gt; supportedCryptogramTypes;  
         };
       </pre>
         <p>
@@ -705,6 +768,28 @@ new PaymentRequest(methodData, details);
           following members:
         </p>
         <dl>
+          <dt>
+            <dfn>tokenReferenceID</dfn> member
+          </dt>
+          <dd>
+            This member is a <a>Payment Network</a>-specific <a>Token Reference
+            ID</a> that represents the stored token for which the payee is
+            requesting a new cryptogram.
+          </dd>
+          <dt>
+            <dfn>encryptedCardNumber</dfn> member
+          </dt>
+          <dd>
+            This optional member is an encrypted <a>Payment Token</a>. Although
+            the <a>tokenReferenceID</a> is preferred it may not always be
+            available, in which case the payee may provide this <a>Payment
+            Token</a> instead, encrypted with the <a>tokenRequestorKey</a>, for
+            example that was returned through the <code>tokenized-card</code>
+            payment response.
+            <p class="note">
+              Need more details on encryption.
+            </p>
+          </dd>
           <dt>
             <dfn>tokenRequestorID</dfn> member
           </dt>
@@ -715,16 +800,15 @@ new PaymentRequest(methodData, details);
             path to the <a>Token Service Provider</a> through the payment
             handler that requested the original token. It is assumed that the
             payment handler also has a means to validate that the payee
-            requesting the cryptogram is authorized to do so (e.g., using
-            <a>origin</a> information).
+            requesting the cryptogram is authorized to do so.
           </dd>
           <dt>
-            <dfn>tokenReferenceID</dfn> member
+            <dfn>supportedCryptogramTypes</dfn> member
           </dt>
           <dd>
-            This member is a <a>Payment Network</a>-specific <a>Token Reference
-            ID</a> that represents the stored token for which the payee is
-            requesting a new cryptogram.
+            This member is an optional list of <a>Payment Network</a>-specific
+            strings, each one a <a>cryptogramType</a>. This list describes the
+            types of <a>Token Cryptogram</a> accepted by the payee.
           </dd>
         </dl>
       </section>
@@ -736,7 +820,9 @@ new PaymentRequest(methodData, details);
         <pre class="idl">
           dictionary TokenCryptogramResponse{
                required DOMString cryptogram;
-        };
+               required DOMString typeOfCryptogram;
+                        DOMString eci;
+          };
       </pre>
         <dl>
           <dt>
@@ -744,6 +830,22 @@ new PaymentRequest(methodData, details);
           </dt>
           <dd>
             This member is a <a>Token Cryptogram</a>.
+          </dd>
+          <dt>
+            <dfn>typeOfCryptogram</dfn> member
+          </dt>
+          <dd>
+            This member is a <a>Payment Network</a>-specific string that
+            describes the <a>Token Cryptogram</a> type.
+          </dd>
+          <dt>
+            <dfn>eci</dfn> member
+          </dt>
+          <dd>
+            This optional member is an <a>Electronic Commerce Indicator</a>, a
+            <a>Payment Network</a>-specific string to indicate the results of
+            user authentication. For related discussion about authentication,
+            see [[!3ds]].
           </dd>
         </dl>
       </section>
