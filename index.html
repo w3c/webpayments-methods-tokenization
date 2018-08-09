@@ -572,6 +572,7 @@ new PaymentRequest(methodData, details);
            required DOMString       cryptogram;
            required DOMString       typeOfCryptogram;
            required DOMString       trid;
+                    DOMString       tokenRequestorKey;
           };
         </pre>
           <dl>
@@ -759,7 +760,6 @@ new PaymentRequest(methodData, details);
         dictionary TokenCryptogramRequest{
            required DOMString   tokenRequestorID;
                     DOMString   tokenReferenceID;
-	            DOMString   tokenRequestorKey;
                     DOMString   encryptedCardNumber;
            sequence&lt;DOMString&gt; supportedCryptogramTypes;  
         };
