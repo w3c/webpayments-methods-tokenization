@@ -398,6 +398,11 @@ new PaymentRequest(methodData, details);
             </p>
           </dd>
         </dl>
+        <p>
+          For more information about handling of <a>supportedNetworks</a>,
+          <a>supportedTypes</a>, and <a>supportedCryptogramTypes</a>, see the
+          <a>steps to check if an instrument is supported</a>.
+        </p>
         <p class="issue" data-number="45"></p>
       </section>
       <section data-dfn-for="TokenUsageType" data-link-for="TokenUsageType">
@@ -934,7 +939,8 @@ new PaymentRequest(methodData, details);
         <ol class="algorithm">
           <li>If <var>types</var> <a data-cite="!infra#list-is-empty">is
           empty</a> and <var>networks</var> <a data-cite=
-          "!infra#list-is-empty">is empty</a>, return true.
+          "!infra#list-is-empty">is empty</a> and <var>cryptograms</var>
+          <a data-cite="!infra#list-is-empty">is empty</a>, return true.
           </li>
           <li>If <var>networks</var> <a data-cite="!infra#list-is-empty">is not
           empty</a>:
