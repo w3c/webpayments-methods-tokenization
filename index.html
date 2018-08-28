@@ -306,6 +306,10 @@ new PaymentRequest(methodData, details);
         <a data-link-for="TokenizedCardRequest">supportedNetworks</a>. This
         specification does not address that registration process.
         </li>
+        <li>An assertion by the payee of acceptance of a
+        <a>supportedNetwork</a> implies acceptance of the network-specific <a>
+          cryptogram</a> types.
+        </li>
       </ul>
     </section>
     <section id="tokenized-card">
@@ -330,7 +334,6 @@ new PaymentRequest(methodData, details);
         dictionary TokenizedCardRequest{
           sequence&lt;DOMString&gt;       supportedNetworks;
           sequence&lt;BasicCardType&gt;   supportedTypes;
-          sequence&lt;DOMString&gt; supportedCryptogramTypes;
           required DOMString              keyProviderURL;
                    TokenUsageType         usageType;
                    DOMString              payeeID;
@@ -357,14 +360,6 @@ new PaymentRequest(methodData, details);
             from the issuer identification number (the first eight digits of
             the <a>primary account number</a> (PAN). The different types are
             represented as the <a>BasicCardType</a> enum.
-          </dd>
-          <dt>
-            <dfn>supportedCryptogramTypes</dfn> member
-          </dt>
-          <dd>
-            This member is an optional list of <a>Payment Network</a>-specific
-            strings, each one a <dfn>cryptogramType</dfn>. This list describes
-            the types of <a>Token Cryptogram</a> accepted by the payee.
           </dd>
           <dt>
             <dfn>usageType</dfn> member
@@ -399,9 +394,9 @@ new PaymentRequest(methodData, details);
           </dd>
         </dl>
         <p>
-          For more information about handling of <a>supportedNetworks</a>,
-          <a>supportedTypes</a>, and <a>supportedCryptogramTypes</a>, see the
-          <a>steps to check if an instrument is supported</a>.
+          For more information about handling of <a>supportedNetworks</a> and
+          <a>supportedTypes</a> see the <a>steps to check if an instrument is
+          supported</a>.
         </p>
         <p class="issue" data-number="45"></p>
       </section>
@@ -662,7 +657,6 @@ new PaymentRequest(methodData, details);
         dictionary TokenReferenceRequest{
           sequence&lt;DOMString&gt;       supportedNetworks;
           sequence&lt;BasicCardType&gt;   supportedTypes;
-          sequence&lt;DOMString&gt; supportedCryptogramTypes;
                    TokenUsageType         usageType;
                    DOMString              payeeID;
         };
@@ -684,14 +678,6 @@ new PaymentRequest(methodData, details);
             from the issuer identification number (the first eight digits of
             the <a>primary account number</a> (PAN). The different types are
             represented as the <a>BasicCardType</a> enum.
-          </dd>
-          <dt>
-            <dfn>supportedCryptogramTypes</dfn> member
-          </dt>
-          <dd>
-            This member is an optional list of <a>Payment Network</a>-specific
-            strings, each one a <a>cryptogramType</a>. This list describes the
-            types of <a>Token Cryptogram</a> accepted by the payee.
           </dd>
           <dt>
             <dfn>usageType</dfn> member
@@ -766,7 +752,6 @@ new PaymentRequest(methodData, details);
            required DOMString   tokenRequestorID;
                     DOMString   tokenReferenceID;
                     DOMString   encryptedCardNumber;
-           sequence&lt;DOMString&gt; supportedCryptogramTypes;  
         };
       </pre>
         <p>
@@ -808,14 +793,6 @@ new PaymentRequest(methodData, details);
             handler that requested the original token. It is assumed that the
             payment handler also has a means to validate that the payee
             requesting the cryptogram is authorized to do so.
-          </dd>
-          <dt>
-            <dfn>supportedCryptogramTypes</dfn> member
-          </dt>
-          <dd>
-            This member is an optional list of <a>Payment Network</a>-specific
-            strings, each one a <a>cryptogramType</a>. This list describes the
-            types of <a>Token Cryptogram</a> accepted by the payee.
           </dd>
         </dl>
       </section>
@@ -902,10 +879,6 @@ new PaymentRequest(methodData, details);
           <li>If <var>request</var>["supportedNetworks"] is present, append
           each item in <var>request</var>["supportedNetworks"] to
           <var>networks</var>.
-          </li>
-          <li>If <var>request</var>["supportedCryptogramTypes"] is present,
-          append each item in <var>request</var>["supportedCryptogramTypes"] to
-          <var>cryptograms</var>.
           </li>
           <li>For each <var>card</var> in <var>cards</var>:
             <ol>
