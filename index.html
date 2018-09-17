@@ -390,9 +390,10 @@ new PaymentRequest(methodData, details);
         <a data-link-for="TokenizedCardRequest">supportedNetworks</a>. This
         specification does not address that registration process.
         </li>
-        <li>An assertion by the payee of acceptance of a
-        <a>supportedNetwork</a> implies acceptance of the network-specific <a>
-          cryptogram</a> types.
+        <li>An assertion by the payee of acceptance of one of the
+        <a data-link-for="TokenizedCardRequest">supportedNetworks</a> implies
+        acceptance of the network-specific <a data-link-for=
+        "EncryptedTokenizedCard">cryptogram</a> types.
         </li>
       </ul>
     </section>
@@ -988,8 +989,7 @@ new PaymentRequest(methodData, details);
           input a <a>card</a> <var>card</var>, a <a data-cite=
           "infra#list">list</a> of <a>type</a> <var>types</var>, a
           <a data-cite="infra#list">list</a> of <a>network</a>
-          <var>networks</var>, a <a data-cite="infra#list">list</a> of
-          <a>cryptogramType</a> <var>cryptograms</var> and a <a data-link-for=
+          <var>networks</var>, and a <a data-link-for=
           "TokenizedCardRequest">usageType</a> <var>usage</var>. It returns
           true if the <var>card</var> is supported, false otherwise.
         </p>
@@ -1018,9 +1018,9 @@ new PaymentRequest(methodData, details);
           <li>If <var>cryptograms</var> <a data-cite="!infra#list-is-empty">is
           not empty</a>:
             <ol>
-              <li>If <var>cryptograms</var> does not include a
-              <a>cryptogramType</a> supported by the <a>payment handler</a>,
-              return false.
+              <li>If <var>cryptograms</var> does not include one of the
+              <a data-link-for="TokenizedCardRequest">supportedTypes</a> of the
+              <a>payment handler</a>, return false.
               </li>
             </ol>
           </li>
