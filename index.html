@@ -101,50 +101,134 @@
         Introduction
       </h2>
       <p>
-        A network token replaces the number embossed on a credit or debit card
-        —the primary account number or PAN— with surrogate data. This
-        substitution offers several security benefits:
-      </p>
-      <ul>
-        <li>By storing tokens instead of the PAN, merchants can reduce the risk
-        of fraud due to data compromise.
-        </li>
-        <li>Tokens may include "domain controls" that reduce opportunities for
-        misuse, for example by limiting usage to a given site, transaction, or
-        time period.
-        </li>
-        <li>Some tokens may be accompanied by per-transaction (or, "dynamic")
-        data such as a ‘cryptogram’, ‘authentication value’ or ‘card
-        verification value’ to enable validation of authorized use.
-        </li>
-      </ul>
-      <p>
-        Network tokens offer additional benefits as well:
-      </p>
-      <ul>
-        <li>If a user's card number is lost, stolen or replaced, a merchant may
-        still use a stored token associated with the card for future
-        transactions.
-        </li>
-        <li>A merchant can reduce compliance burden in partnership with a
-        payment service provider though the use of <a>Token Reference ID</a>s:
-        the payment service provider stores the token while the merchant stores
-        the <a>Token Reference ID</a>.
-        </li>
-      </ul>
-      <p>
-        Payment networks (e.g., American Express, China Union Pay, Discover,
-        JCB, Mastercard, and Visa) and issuing banks offer services that
-        provide the tokens described by this specification. Data requirements
-        are drawn from the EMVCo specifications [[!EMVCO-TOKENIZATION]] and
-        [[!EMVCO-3DS]].
+        This specification addresses data security in credit or debit card
+        payments on the Web.
       </p>
       <p>
-        This document describes how to connect these service providers to the
-        Payment Request [[payment-request]] ecosystem so that merchants can
-        request network and issuer tokens, and users can use payment handlers
-        that request these tokens from service providers.
+        When making a card payment, the cardholder shares data with a merchant.
+        The sahred data has traditionally included the number embossed on the
+        card (the primary account number or PAN), the card expiry date,
+        cardholder name, and billing address.
       </p>
+      <p>
+        There are a variety of ways to share this data: imprinting the card
+        (physically making use of the embossed numbers on the card), swiping
+        the card through magnetic stripe reader, providing the data through a
+        chip or contactless connection, typing it into a Web form, or reading
+        it aloud over the phone. These approaches differ in their convenience
+        and security.
+      </p>
+      <p>
+        Most notably, if the PAN is intercepted by a malicious actor (in a
+        merchant store or through a compromised Web site, for example), this
+        can lead to fraudulent reuse. The card payment ecosystem has chosen to
+        combat this risk by reducing the circulation of PANs, and instead
+        reducing attack vectors through more opaque and controlled data. By
+        accepting (and possibly storing) tokens instead of the PAN, merchants
+        can reduce the risk of fraud due to data compromise. This can lower
+        their costs to receive card payments and their liability for some types
+        of fraud.
+      </p>
+      <p>
+        EMVCo has published [[!EMVCO-TOKENIZATION]] and related documents that
+        replace the traditional PAN with a "network token" (as well as
+        additional data to help limit misuse of each network token). These are
+        called "network" tokens because card payment networks (e.g., American
+        Express, China Union Pay, Discover, JCB, Mastercard, and Visa) and
+        issuing banks offer relevant services. The current document describes
+        how to connect these service providers to the Payment Request
+        [[payment-request]] ecosystem so that merchants can request network and
+        issuer tokens, and users can use payment handlers that request these
+        tokens from service providers.
+      </p>
+      <p>
+        The network tokenization approach has gained some traction in "card
+        present" transactions, that is through physical terminals. Indeed, in
+        regions where merchants have migrated to terminals that accept network
+        tokens, fraud has tended to move online. This trend is an important
+        reason why the Web Payments Working Group seeks to increase the
+        security of card payments on the Web.
+      </p>
+      <section class="informative">
+        <h2>
+          Security Benefits of Network Tokenization
+        </h2>
+        <p>
+          Network tokenization offers several security benefits:
+        </p>
+        <ul>
+          <li>The data can include "domain controls" that reduce opportunities
+          for misuse, for example by limiting use of a token to a given site,
+          transaction, or time period.
+          </li>
+          <li>Some transactions includes per-transaction (or, "dynamic")
+          elements such as a ‘cryptogram’, ‘authentication value’ or ‘card
+          verification value’ to enable validation of authorized use.
+          </li>
+        </ul>
+        <p>
+          In addition, the current specification includes mechanisms to further
+          enhance security through encryption of potentially sensitive data.
+        </p>
+      </section>
+      <section class="informative">
+        <h2>
+          The Network Tokenization Ecosystem
+        </h2>
+        <p>
+          In [[!EMVCO-TOKENIZATION]] EMVCo describes the different roles in the
+          tokenization ecosystem as well as the data requirements that are
+          related through the current specification. Please consult that
+          document for authoriative definitions. For the purposes of this
+          introduction, here are brief descriptions of key roles:
+        </p>
+        <dl>
+          <dt>
+            Card Issuer
+          </dt>
+          <dd>
+            The card issuer is typically a bank that makes available a credit
+            or debit card to a customer, the cardholder.
+          </dd>
+          <dt>
+            Token Service Provider (TSP)
+          </dt>
+          <dd>
+            Token Service Providers perform a variety of tasks, especially the
+            generation and storage of tokens, mapping between PANs and tokens
+            (and vice versa), and validating token usage.
+          </dd>
+          <dt>
+            Token Requestor
+          </dt>
+          <dd>
+            The Token Requestor is authorized to request tokens from the Token
+            Service Provider. Different parties may be Token Requestors,
+            including merchants, parties that have a relationship with a
+            merchant (e.g., payment gateways), and parties that have
+            relationships with the user (e.g., payment handlers).
+          </dd>
+        </dl>
+      </section>
+      <section class="informative">
+        <h2>
+          Additional Benefits of Network Tokenization
+        </h2>
+        <p>
+          Network tokens offer additional benefits as well beyond security:
+        </p>
+        <ul>
+          <li>If a user's card number is lost, stolen or replaced, a merchant
+          may still use a stored token associated with the card for future
+          transactions.
+          </li>
+          <li>A merchant can reduce compliance burden in partnership with a
+          payment service provider though the use of <a>Token Reference
+          ID</a>s: the payment service provider stores the token while the
+          merchant stores the <a>Token Reference ID</a>.
+          </li>
+        </ul>
+      </section>
     </section>
     <section id="exampleData">
       <h2>
