@@ -16,10 +16,10 @@ Payee->UA: Serve check-out page
 UA->Payer: Present check-out page with PR API('token-cryptogram')
 UA<-Payer: Push Buy button
 note over PH: Open question: narrow matching if payment handler is token requestor; browser matching if payee is token requestor.
-UA->Payer: Offer Payment Handler matching request filters (tokenReferenceID or PAN, tokenRequestorID)
 alt Skip-the-sheet flow
-UA->PH: Launch Payment Handler
+UA->PH: Launch Payment Handler that matches request filters (tokenReferenceID or PAN, tokenRequestorID)
 else Show the sheet flow
+UA->Payer: Offer Payment Handler matching request filters (tokenReferenceID or PAN, tokenRequestorID)
 UA<-Payer: Select Payment Handler
 UA->PH: Launch Payment Handler
 end
