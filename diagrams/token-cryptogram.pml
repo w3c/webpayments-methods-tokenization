@@ -19,7 +19,7 @@ note over PH: Open question: narrow matching if payment handler is token request
 UA->Payer: Offer Payment Handler matching request filters (tokenReferenceID or PAN, tokenRequestorID)
 alt Skip-the-sheet flow
 UA->PH: Launch Payment Handler
-else
+else Show the sheet flow
 UA<-Payer: Select Payment Handler
 UA->PH: Launch Payment Handler
 end
