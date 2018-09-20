@@ -15,7 +15,7 @@ note over Payer: For merchants who do not have backend integrations to use Payme
 Payee->UA: Serve check-out page
 UA->Payer: Present check-out page with PR API('token-cryptogram')
 UA<-Payer: Push Buy button
-note over PH: Open question: narrow matching if payment handler is token requestor; browser matching if payee is token requestor.
+note over PH: Open question: narrow matching if payment handler is token requestor; broad matching if payee is token requestor.
 alt Skip-the-sheet flow
 UA->PH: Launch Payment Handler that matches request filters (tokenReferenceID or PAN, tokenRequestorID)
 else Show the sheet flow
