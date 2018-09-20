@@ -7,7 +7,7 @@ participant "Payment Handler" as PH
 participant "TSP" as TSP
 
 title Subsequent cryptogram request for previous card-on-file token
-note over Payer: This flow diagram shows how merchants who do not have backend integrations can use Payment Request API for subsequent cryptograms.
+note over Payer: For merchants who do not have backend integrations to use Payment Request API for subsequent cryptograms.
 
 
 == Checkout ==
