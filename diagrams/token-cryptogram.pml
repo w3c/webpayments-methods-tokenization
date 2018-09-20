@@ -31,7 +31,7 @@ note over UA,PH: The payment handler may not require user interaction before fet
 note over PH, TSP: Authentication, token caching, payment handler verification, and other payment handler details out of scope.
 
 PH->TSP: Request data
-PH<-TSP: Return data (cryptogram)
+PH<-TSP: Return cryptogram and other relevant data
 UA<-PH: Return 'token-cryptogram' method data
 Payee<-UA: Return payment response
 
