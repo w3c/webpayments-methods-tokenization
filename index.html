@@ -1294,6 +1294,41 @@ new PaymentRequest(methodData, details);
       <p class="issue" title="Out-of-band provisioning" data-number="32"></p>
       <p class="issue" title="Key Provider Registration" data-number="31"></p>
     </section>
+    <section id="flow">
+      <h2>
+        Appendix: Flow Diagrams
+      </h2>
+      <section>
+        <h3>
+          First request for one-time use, recurring, card-on-file token
+        </h3>
+        <p>
+          This diagram illustrates one flow where a payee requests a token (or
+          token reference id) for one-time use, recurring, or card-on-file.
+        </p>
+        <div>
+          <a href=
+          "http://www.plantuml.com/plantuml/proxy?fmt=svg&amp;src=https://raw.githubusercontent.com/w3c/webpayments-payment-methods-tokenization/gh-pages/diagrams/tokenized-card.pml">
+          <img alt="Push credit transfer flow, SEPA example" width="100%" src=
+          "http://www.plantuml.com/plantuml/proxy?fmt=svg&amp;src=https://raw.githubusercontent.com/w3c/webpayments-payment-methods-tokenization/gh-pages/diagrams/tokenized-card.pml"></a>
+        </div>
+      </section>
+      <section>
+        <h3>
+          Subsequent cryptogram request for previous card-on-file token
+        </h3>
+        <p>
+          This diagram illustrates a request for a subsequent cryptogram based
+          on a previously stored token.
+        </p>
+        <div>
+          <a href=
+          "http://www.plantuml.com/plantuml/proxy?fmt=svg&amp;src=https://raw.githubusercontent.com/w3c/webpayments-payment-methods-tokenization/gh-pages/diagrams/token-cryptogram.pml">
+          <img alt="Push credit transfer flow, SEPA example" width="100%" src=
+          "http://www.plantuml.com/plantuml/proxy?fmt=svg&amp;src=https://raw.githubusercontent.com/w3c/webpayments-payment-methods-tokenization/gh-pages/diagrams/token-cryptogram.pml"></a>
+        </div>
+      </section>
+    </section>
     <section id="acks">
       <h2>
         Acknowledgments
