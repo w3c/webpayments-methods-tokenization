@@ -3,4 +3,5 @@
 ,   "contacts":   ["ianbjacobs"]
 ,   "shortName":  "webpayments-methods-tokenization"
 ,   "repo-type":  "others"
+,   "exposed": false
 }
